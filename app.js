@@ -2,6 +2,7 @@
 window.onload = function() {
     muatHalamanKas();
     muatHalamanPengurus();
+    muatDaftarSaran();
 }
 
 function gantiTab(tab) {
@@ -118,9 +119,72 @@ async function kirimDataKas(e) {
     }
 }
 
-// Fungsi opsional jika Kotak Saran ingin dikirim via SheetDB
-function kirimSaran(e) {
+// --- MODUL POJOK WARGA ---
+async function kirimSaran(e) {
     e.preventDefault();
-    alert('Terima kasih! Aspirasi Anda telah dikirim ke pengurus RT.');
-    document.getElementById('form-saran').reset();
+    let btn = document.getElementById('btn-saran');
+    btn.innerText = 'Mengirim...';
+    btn.disabled = true;
+
+    // Ambil tanggal otomatis secara real-time
+    let d = new Date();
+    let tanggalOtomatis = d.toISOString().split('T')[0];
+
+    let dataBaru = {
+        "Tanggal": tanggalOtomatis,
+        "Nama": document.getElementById('saran-nama').value,
+        "Pesan": document.getElementById('saran-pesan').value
+    };
+
+    try {
+        await kirimSaranApi(dataBaru);
+        alert('Yeay! Pesan / coret-coretan kamu berhasil dikirim. 🎉');
+        document.getElementById('form-saran').reset();
+        await muatDaftarSaran();
+        
+        btn.innerText = 'Kirim Pesan 🚀';
+        btn.disabled = false;
+    } catch (err) {
+        alert('Gagal mengirim pesan, coba lagi ya.');
+        btn.innerText = 'Kirim Pesan 🚀';
+        btn.disabled = false;
+    }
+}
+
+async function muatDaftarSaran() {
+    let listContainer = document.getElementById('list-saran');
+    if (!listContainer) return;
+
+    try {
+        let data = await ambilDataSaran();
+        listContainer.innerHTML = '';
+
+        if (!data || data.length === 0) {
+            listContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">Belum ada coretan. Jadilah yang pertama nulis!</p>`;
+            return;
+        }
+
+        // Tampilkan 5 pesan terbaru secara terbalik
+        let dataTerbalik = [...data].reverse().slice(0, 5);
+
+        dataTerbalik.forEach(row => {
+            let nama = row.Nama || row[1] || 'Warga Anonim';
+            let pesan = row.Pesan || row[2] || '';
+            let tgl = row.Tanggal || row[0] || '';
+
+            if (pesan) {
+                listContainer.innerHTML += `
+                    <div class="p-2.5 bg-slate-50 rounded-lg border text-xs space-y-1">
+                        <div class="flex justify-between items-center text-[10px] text-slate-400">
+                            <span class="font-bold text-blue-600">${nama}</span>
+                            <span>${tgl}</span>
+                        </div>
+                        <p class="text-slate-700 italic">"${pesan}"</p>
+                    </div>
+                `;
+            }
+        });
+    } catch (e) {
+        listContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">Gagal memuat pesan.</p>`;
+    }
 }
