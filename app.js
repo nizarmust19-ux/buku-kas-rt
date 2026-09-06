@@ -51,7 +51,7 @@ async function muatHalamanKas() {
     let dataUrut = data.filter(row => row[0]).sort((a, b) => {
         let tglA = new Date(a[0]);
         let tglB = new Date(b[0]);
-        return tglB - tglA; // Tanggal terbesar/terbaru di atas
+        return tglB - tglA; // Tanggal terbaru di atas
     });
 
     let data10Terakhir = dataUrut.slice(0, 10);
@@ -130,12 +130,19 @@ async function kirimSaran(e) {
     btn.innerText = 'Mengirim...';
     btn.disabled = true;
 
-    // Ambil tanggal otomatis secara real-time
+    // AMBIL WAKTU REALTIME DIAM-DIAM UNTUK SORTING (YYYY-MM-DD HH:MM:SS)
     let d = new Date();
-    let tanggalOtomatis = d.toISOString().split('T')[0];
+    let tahun = d.getFullYear();
+    let bulan = String(d.getMonth() + 1).padStart(2, '0');
+    let hari = String(d.getDate()).padStart(2, '0');
+    let jam = String(d.getHours()).padStart(2, '0');
+    let menit = String(d.getMinutes()).padStart(2, '0');
+    let detik = String(d.getSeconds()).padStart(2, '0');
+
+    let waktuRealtime = `${tahun}-${bulan}-${hari} ${jam}:${menit}:${detik}`;
 
     let dataBaru = {
-        "Tanggal": tanggalOtomatis,
+        "Tanggal": waktuRealtime, // Tersimpan di database untuk urutan, tapi tidak ditampilkan ke layar
         "Nama": document.getElementById('saran-nama').value,
         "Pesan": document.getElementById('saran-pesan').value
     };
@@ -168,28 +175,25 @@ async function muatDaftarSaran() {
             return;
         }
 
-        // URUTKAN OTOMATIS POJOK WARGA BERDASARKAN TANGGAL TERBARU DI ATAS
+        // URUTKAN OTOMATIS POJOK WARGA BERDASARKAN WAKTU TERBARU DI ATAS
         let dataUrutSaran = [...data].sort((a, b) => {
             let tglA = new Date(a.Tanggal || a[0] || 0);
             let tglB = new Date(b.Tanggal || b[0] || 0);
-            return tglB - tglA; // Tanggal terbaru di atas
+            return tglB - tglA; // Terbaru di atas
         });
 
-        // Ambil 5 pesan terbaru
-        let data5Terakhir = dataUrutSaran.slice(0, 20);
+        // Ambil 10 pesan terbaru
+        let data10Terakhir = dataUrutSaran.slice(0, 10);
 
-        data5Terakhir.forEach(row => {
+        data10Terakhir.forEach(row => {
             let nama = row.Nama || row[1] || 'Warga Anonim';
             let pesan = row.Pesan || row[2] || '';
-            let tgl = row.Tanggal || row[0] || '';
+            // Tanggal & waktu sengaja tidak ditampilkan di layar agar bersih
 
             if (pesan) {
                 listContainer.innerHTML += `
                     <div class="p-2.5 bg-slate-50 rounded-lg border text-xs space-y-1">
-                        <div class="flex justify-between items-center text-[10px] text-slate-400">
-                            <span class="font-bold text-blue-600">${nama}</span>
-                            <span>${tgl}</span>
-                        </div>
+                        <span class="font-bold text-blue-600 block">${nama}</span>
                         <p class="text-slate-700 italic">"${pesan}"</p>
                     </div>
                 `;
