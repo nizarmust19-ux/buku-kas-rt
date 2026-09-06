@@ -11,18 +11,19 @@ function gantiTab(tab) {
     document.getElementById('section-saran').classList.toggle('hidden', tab !== 'saran');
     
     document.getElementById('tab-laporan').className = tab === 'laporan' 
-        ? 'flex-1 py-2 font-semibold rounded-lg bg-blue-600 text-white transition' 
-        : 'flex-1 py-2 font-semibold rounded-lg text-slate-600 transition';
+        ? 'flex-1 py-2 font-semibold rounded-xl bg-blue-600 text-white transition shadow-sm' 
+        : 'flex-1 py-2 font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition';
         
     document.getElementById('tab-pengurus').className = tab === 'pengurus' 
-        ? 'flex-1 py-2 font-semibold rounded-lg bg-blue-600 text-white transition' 
-        : 'flex-1 py-2 font-semibold rounded-lg text-slate-600 transition';
+        ? 'flex-1 py-2 font-semibold rounded-xl bg-blue-600 text-white transition shadow-sm' 
+        : 'flex-1 py-2 font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition';
 
     document.getElementById('tab-saran').className = tab === 'saran' 
-        ? 'flex-1 py-2 font-semibold rounded-lg bg-blue-600 text-white transition' 
-        : 'flex-1 py-2 font-semibold rounded-lg text-slate-600 transition';
+        ? 'flex-1 py-2 font-semibold rounded-xl bg-blue-600 text-white transition shadow-sm' 
+        : 'flex-1 py-2 font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition';
 }
 
+// --- MODUL LAPORAN KAS (UNLIMITED & SCROLL) ---
 async function muatHalamanKas() {
     let data = await ambilDataKas();
     let tbody = document.getElementById('tabel-transaksi');
@@ -30,7 +31,7 @@ async function muatHalamanKas() {
     let totalMasuk = 0, totalKeluar = 0;
 
     if(data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada data kas.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">Belum ada data kas.</td></tr>`;
         return;
     }
 
@@ -47,25 +48,24 @@ async function muatHalamanKas() {
     document.getElementById('txt-keluar').innerText = 'Rp ' + totalKeluar.toLocaleString('id-ID');
     document.getElementById('txt-saldo').innerText = 'Rp ' + (totalMasuk - totalKeluar).toLocaleString('id-ID');
 
-    // URUTKAN DATA KAS BERDASARKAN TANGGAL SECARA AKURAT (TERBARU DI ATAS)
+    // URUTKAN DATA KAS BERDASARKAN TANGGAL TERBARU DI ATAS
     let dataUrut = data.filter(row => row[0]).sort((a, b) => {
         let tglA = new Date(a[0]);
         let tglB = new Date(b[0]);
         return tglB - tglA; // Tanggal terbaru di atas
     });
 
-    let data10Terakhir = dataUrut.slice(0, 10);
-
-    data10Terakhir.forEach(row => {
+    // TAMPILKAN SEMUA DATA (UNLIMITED) TANPA .slice()
+    dataUrut.forEach(row => {
         let masuk = parseFloat(row[2]) || 0;
         let keluar = parseFloat(row[3]) || 0;
 
         tbody.innerHTML += `
             <tr class="border-b hover:bg-slate-50">
-                <td class="p-2 text-slate-500">${row[0]}</td>
-                <td class="p-2 font-medium">${row[1]}</td>
-                <td class="p-2 text-right text-emerald-600">${masuk > 0 ? 'Rp ' + masuk.toLocaleString('id-ID') : '-'}</td>
-                <td class="p-2 text-right text-rose-600">${keluar > 0 ? 'Rp ' + keluar.toLocaleString('id-ID') : '-'}</td>
+                <td class="p-2.5 text-slate-500">${row[0]}</td>
+                <td class="p-2.5 font-medium">${row[1]}</td>
+                <td class="p-2.5 text-right text-emerald-600">${masuk > 0 ? 'Rp ' + masuk.toLocaleString('id-ID') : '-'}</td>
+                <td class="p-2.5 text-right text-rose-600">${keluar > 0 ? 'Rp ' + keluar.toLocaleString('id-ID') : '-'}</td>
             </tr>
         `;
     });
@@ -77,19 +77,19 @@ async function muatHalamanPengurus() {
     list.innerHTML = '';
 
     if(data.length === 0) {
-        list.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">Belum ada data pengurus.</p>`;
+        list.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada data pengurus.</p>`;
         return;
     }
 
     data.forEach(row => {
         if (row[0]) {
             list.innerHTML += `
-                <div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg border text-xs">
+                <div class="flex justify-between items-center p-3.5 bg-slate-50 rounded-xl border text-xs sm:text-sm">
                     <div>
                         <p class="font-bold text-slate-800">${row[1]}</p>
-                        <p class="text-slate-500 text-[11px]">${row[0]}</p>
+                        <p class="text-slate-500 text-xs">${row[0]}</p>
                     </div>
-                    <a href="https://wa.me/${row[2]}" target="_blank" class="bg-emerald-500 text-white px-3 py-1.5 rounded-md font-semibold hover:bg-emerald-600 transition">WhatsApp</a>
+                    <a href="https://wa.me/${row[2]}" target="_blank" class="bg-emerald-500 text-white px-3.5 py-2 rounded-lg font-semibold hover:bg-emerald-600 transition">WhatsApp</a>
                 </div>
             `;
         }
@@ -116,6 +116,7 @@ async function kirimDataKas(e) {
         await muatHalamanKas();
         btn.innerText = 'Simpan Transaksi';
         btn.disabled = false;
+        tutupModalAdmin();
     } catch (err) {
         alert('Gagal menyimpan.');
         btn.innerText = 'Simpan Transaksi';
@@ -123,7 +124,7 @@ async function kirimDataKas(e) {
     }
 }
 
-// --- MODUL POJOK WARGA ---
+// --- MODUL POJOK WARGA (UNLIMITED & SCROLL) ---
 async function kirimSaran(e) {
     e.preventDefault();
     let btn = document.getElementById('btn-saran');
@@ -142,7 +143,7 @@ async function kirimSaran(e) {
     let waktuRealtime = `${tahun}-${bulan}-${hari} ${jam}:${menit}:${detik}`;
 
     let dataBaru = {
-        "Tanggal": waktuRealtime, // Tersimpan di database untuk urutan, tapi tidak ditampilkan ke layar
+        "Tanggal": waktuRealtime, // Tersimpan untuk urutan sorting di belakang layar
         "Nama": document.getElementById('saran-nama').value,
         "Pesan": document.getElementById('saran-pesan').value
     };
@@ -171,7 +172,7 @@ async function muatDaftarSaran() {
         listContainer.innerHTML = '';
 
         if (!data || data.length === 0) {
-            listContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">Belum ada coretan. Jadilah yang pertama nulis!</p>`;
+            listContainer.innerHTML = `<p class="text-xs sm:text-sm text-slate-400 text-center py-4">Belum ada coretan. Jadilah yang pertama nulis!</p>`;
             return;
         }
 
@@ -182,17 +183,15 @@ async function muatDaftarSaran() {
             return tglB - tglA; // Terbaru di atas
         });
 
-        // Ambil 10 pesan terbaru
-        let data10Terakhir = dataUrutSaran.slice(0, 10);
-
-        data10Terakhir.forEach(row => {
+        // TAMPILKAN SEMUA PESAN (UNLIMITED) TANPA .slice()
+        dataUrutSaran.forEach(row => {
             let nama = row.Nama || row[1] || 'Warga Anonim';
             let pesan = row.Pesan || row[2] || '';
-            // Tanggal & waktu sengaja tidak ditampilkan di layar agar bersih
+            // Tanggal & waktu tidak ditampilkan di layar agar tetap bersih
 
             if (pesan) {
                 listContainer.innerHTML += `
-                    <div class="p-2.5 bg-slate-50 rounded-lg border text-xs space-y-1">
+                    <div class="p-3 bg-slate-50 rounded-xl border text-xs sm:text-sm space-y-1">
                         <span class="font-bold text-blue-600 block">${nama}</span>
                         <p class="text-slate-700 italic">"${pesan}"</p>
                     </div>
@@ -200,6 +199,6 @@ async function muatDaftarSaran() {
             }
         });
     } catch (e) {
-        listContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">Gagal memuat pesan.</p>`;
+        listContainer.innerHTML = `<p class="text-xs sm:text-sm text-slate-400 text-center py-4">Gagal memuat pesan.</p>`;
     }
 }
