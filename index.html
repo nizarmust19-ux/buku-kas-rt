@@ -9,48 +9,48 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans pb-12 antialiased">
 
-    <div class="max-w-lg mx-auto p-4 sm:p-6 space-y-5">
+    <div class="max-w-lg mx-auto p-4 sm:p-6 space-y-4">
         
-        <!-- HEADER / JUDUL -->
-        <div class="bg-white p-5 rounded-2xl shadow-sm border text-center space-y-1.5">
-            <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">RT 01 / RW 03</h1>
-            <p class="text-xs sm:text-sm text-slate-500 font-medium">Portal Informasi Warga </p>
+        <!-- ================= KARTU SALDO UTAMA (DI ATAS) ================= -->
+        <div class="bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-5 sm:p-6 rounded-2xl shadow-md space-y-3">
+            <div>
+                <p class="text-xs sm:text-sm text-blue-100 uppercase tracking-wider font-semibold">Saldo Kas Saat Ini</p>
+                <h2 id="txt-saldo" class="text-3xl sm:text-4xl font-black mt-1">Rp 0</h2>
+            </div>
+            <div class="grid grid-cols-2 gap-3 pt-3 border-t border-blue-500/40 text-xs sm:text-sm">
+                <div>
+                    <p class="text-blue-100">Total Masuk</p>
+                    <p id="txt-masuk" class="font-bold text-emerald-300 text-base sm:text-lg">Rp 0</p>
+                </div>
+                <div>
+                    <p class="text-blue-100">Total Keluar</p>
+                    <p id="txt-keluar" class="font-bold text-rose-300 text-base sm:text-lg">Rp 0</p>
+                </div>
+            </div>
         </div>
 
-        <!-- MENU / NAVIGASI TAB -->
-        <div class="flex bg-white p-1.5 rounded-2xl shadow-sm border text-xs sm:text-sm font-semibold">
-            <button id="tab-laporan" onclick="gantiTab('laporan')" class="flex-1 py-2.5 rounded-xl bg-blue-600 text-white transition shadow-sm">Laporan Kas</button>
-            <button id="tab-pengurus" onclick="gantiTab('pengurus')" class="flex-1 py-2.5 rounded-xl text-slate-600 hover:text-slate-900 transition">Pengurus</button>
-            <button id="tab-saran" onclick="gantiTab('saran')" class="flex-1 py-2.5 rounded-xl text-slate-600 hover:text-slate-900 transition">Pojok Warga</button>
+        <!-- ================= NAVIGASI IKON (4 TOMBOL JEJER) ================= -->
+        <div class="grid grid-cols-4 gap-2 bg-white p-2 rounded-2xl shadow-sm border text-center">
+            <button id="tab-laporan" onclick="gantiTab('laporan')" class="flex flex-col items-center justify-center py-2.5 rounded-xl bg-blue-600 text-white transition shadow-sm space-y-1">
+                <span class="text-lg">📊</span>
+                <span class="text-[11px] font-bold leading-tight">Laporan</span>
+            </button>
+            <button onclick="bukaModalAdmin()" class="flex flex-col items-center justify-center py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1">
+                <span class="text-lg">➕</span>
+                <span class="text-[11px] font-bold leading-tight">Input Kas</span>
+            </button>
+            <button id="tab-pengurus" onclick="gantiTab('pengurus')" class="flex flex-col items-center justify-center py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1">
+                <span class="text-lg">👥</span>
+                <span class="text-[11px] font-bold leading-tight">Pengurus</span>
+            </button>
+            <button id="tab-saran" onclick="gantiTab('saran')" class="flex flex-col items-center justify-center py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1">
+                <span class="text-lg">💬</span>
+                <span class="text-[11px] font-bold leading-tight">Pojok Warga</span>
+            </button>
         </div>
 
         <!-- ================= SECTION 1: LAPORAN KAS ================= -->
         <section id="section-laporan" class="space-y-4">
-            <!-- Saldo Card -->
-            <div class="bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-5 sm:p-6 rounded-2xl shadow-md space-y-3">
-                <div>
-                    <p class="text-xs sm:text-sm text-blue-100 uppercase tracking-wider font-semibold">Saldo Kas Saat Ini</p>
-                    <h2 id="txt-saldo" class="text-3xl sm:text-4xl font-black mt-1">Rp 0</h2>
-                </div>
-                <div class="grid grid-cols-2 gap-3 pt-3 border-t border-blue-500/40 text-xs sm:text-sm">
-                    <div>
-                        <p class="text-blue-100">Total Masuk</p>
-                        <p id="txt-masuk" class="font-bold text-emerald-300 text-base sm:text-lg">Rp 0</p>
-                    </div>
-                    <div>
-                        <p class="text-blue-100">Total Keluar</p>
-                        <p id="txt-keluar" class="font-bold text-rose-300 text-base sm:text-lg">Rp 0</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tombol Admin Input Kas -->
-            <div class="text-right">
-                <button onclick="bukaModalAdmin()" class="text-xs sm:text-sm bg-slate-800 text-white px-4 py-2 rounded-xl font-bold shadow-sm hover:bg-slate-700 transition">
-                    🔐 Input Kas (Pengurus)
-                </button>
-            </div>
-
             <!-- Tabel Transaksi Unlimited dengan Scroll -->
             <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border space-y-3">
                 <h3 class="font-bold text-sm sm:text-base text-slate-800">Semua Riwayat Transaksi</h3>
@@ -161,4 +161,5 @@
     <script src="api.js"></script>
     <script src="app.js"></script>
 </body>
-</html>
+    </html>
+    
