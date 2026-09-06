@@ -47,7 +47,7 @@ async function muatHalamanKas() {
     document.getElementById('txt-keluar').innerText = 'Rp ' + totalKeluar.toLocaleString('id-ID');
     document.getElementById('txt-saldo').innerText = 'Rp ' + (totalMasuk - totalKeluar).toLocaleString('id-ID');
 
-    // URUTKAN DATA BERDASARKAN TANGGAL SECARA AKURAT (TERBARU DI ATAS)
+    // URUTKAN DATA KAS BERDASARKAN TANGGAL SECARA AKURAT (TERBARU DI ATAS)
     let dataUrut = data.filter(row => row[0]).sort((a, b) => {
         let tglA = new Date(a[0]);
         let tglB = new Date(b[0]);
@@ -168,15 +168,15 @@ async function muatDaftarSaran() {
             return;
         }
 
-        // URUTKAN OTOMATIS BERDASARKAN TANGGAL TERBARU (Pojok Warga)
+        // URUTKAN OTOMATIS POJOK WARGA BERDASARKAN TANGGAL TERBARU DI ATAS
         let dataUrutSaran = [...data].sort((a, b) => {
-            let tglA = new Date(a.Tanggal || a[0]);
-            let tglB = new Date(b.Tanggal || b[0]);
+            let tglA = new Date(a.Tanggal || a[0] || 0);
+            let tglB = new Date(b.Tanggal || b[0] || 0);
             return tglB - tglA; // Tanggal terbaru di atas
         });
 
         // Ambil 5 pesan terbaru
-        let data5Terakhir = dataUrutSaran.slice(0, 5);
+        let data5Terakhir = dataUrutSaran.slice(0, 20);
 
         data5Terakhir.forEach(row => {
             let nama = row.Nama || row[1] || 'Warga Anonim';
@@ -198,5 +198,4 @@ async function muatDaftarSaran() {
     } catch (e) {
         listContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">Gagal memuat pesan.</p>`;
     }
-                                             }
-                                           
+}
