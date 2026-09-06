@@ -54,7 +54,7 @@ async function muatHalamanKas() {
         return tglB - tglA; // Tanggal terbesar/terbaru di atas
     });
 
-    let data10Terakhir = dataUrut.slice(0, 20);
+    let data10Terakhir = dataUrut.slice(0, 5);
 
     data10Terakhir.forEach(row => {
         let masuk = parseFloat(row[2]) || 0;
