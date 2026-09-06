@@ -43,3 +43,26 @@ async function simpanDataKasApi(newData) {
     });
     return await res.json();
 }
+
+// --- MODUL TAMBAHAN: POJOK WARGA ---
+async function ambilDataSaran() {
+    try {
+        let res = await fetch(CONFIG.apiSaranUrl);
+        return await res.json();
+    } catch (err) {
+        console.error("Gagal memuat pojok warga", err);
+        return [];
+    }
+}
+
+async function kirimSaranApi(dataBaru) {
+    let res = await fetch(CONFIG.apiSaranUrl, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ data: dataBaru })
+    });
+    return await res.json();
+}
