@@ -1,14 +1,6 @@
 // --- MODUL UTAMA APLIKASI (CONTROLLER) ---
-let cacheDataKas = []; // Menyimpan data mentah agar filter cepat
-
 window.onload = function() {
-    // Set default input bulan ke bulan saat ini (Format: YYYY-MM)
-    let sekarang = new Date();
-    let tahun = sekarang.getFullYear();
-    let bulan = String(sekarang.getMonth() + 1).padStart(2, '0');
-    document.getElementById('pilih-bulan').value = `${tahun}-${bulan}`;
-
-    muatDataAwal();
+    muatHalamanKas();
     muatHalamanPengurus();
 }
 
@@ -25,61 +17,49 @@ function gantiTab(tab) {
         : 'flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 transition';
 }
 
-async function muatDataAwal() {
-    cacheDataKas = await ambilDataKas();
-    filterDataBulan();
-}
-
-// Fungsi untuk menyaring data berdasarkan bulan yang dipilih di dropdown
-function filterDataBulan() {
-    let bulanPilihan = document.getElementById('pilih-bulan').value; // Contoh: "2026-06"
+async function muatHalamanKas() {
+    let data = await ambilDataKas();
     let tbody = document.getElementById('tabel-transaksi');
     tbody.innerHTML = '';
-    
-    let totalMasukBulanIni = 0;
-    let totalKeluarBulanIni = 0;
-    let transaksiBulanIni = [];
+    let totalMasuk = 0, totalKeluar = 0;
 
-    // Filter data sesuai bulan
-    cacheDataKas.forEach(row => {
-        let tgl = row[0]; // Kolom tanggal (YYYY-MM-DD)
-        if (tgl && tgl.startsWith(bulanPilihan)) {
-            let masuk = parseFloat(row[2]) || 0;
-            let keluar = parseFloat(row[3]) || 0;
-            totalMasukBulanIni += masuk;
-            totalKeluarBulanIni += keluar;
-            transaksiBulanIni.push(row);
-        }
-    });
-
-    // Update Kartu Ringkasan
-    document.getElementById('txt-masuk').innerText = 'Rp ' + totalMasukBulanIni.toLocaleString('id-ID');
-    document.getElementById('txt-keluar').innerText = 'Rp ' + totalKeluarBulanIni.toLocaleString('id-ID');
-    document.getElementById('txt-saldo').innerText = 'Rp ' + (totalMasukBulanIni - totalKeluarBulanIni).toLocaleString('id-ID');
-
-    // Tampilkan beberapa baris transaksi terbaru pada bulan tersebut (maksimal 5 baris)
-    if(transaksiBulanIni.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Tidak ada transaksi pada bulan ini.</td></tr>`;
-        document.getElementById('info-jumlah-trx').innerText = "0 transaksi";
+    if(data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada data kas.</td></tr>`;
         return;
     }
 
-    // Ambil 5 transaksi teratas saja untuk tampilan ringkas
-    let transaksiRingkas = transaksiBulanIni.slice(0, 5);
-    document.getElementById('info-jumlah-trx').innerText = `Menampilkan ${transaksiRingkas.length} dari ${transaksiBulanIni.length} transaksi`;
+    // Hitung total keseluruhan untuk kartu ringkasan
+    data.forEach(row => {
+        if (row[0]) {
+            let masuk = parseFloat(row[2]) || 0;
+            let keluar = parseFloat(row[3]) || 0;
+            totalMasuk += masuk;
+            totalKeluar += keluar;
+        }
+    });
 
-    transaksiRingkas.forEach(row => {
-        let masuk = parseFloat(row[2]) || 0;
-        let keluar = parseFloat(row[3]) || 0;
+    document.getElementById('txt-masuk').innerText = 'Rp ' + totalMasuk.toLocaleString('id-ID');
+    document.getElementById('txt-keluar').innerText = 'Rp ' + totalKeluar.toLocaleString('id-ID');
+    document.getElementById('txt-saldo').innerText = 'Rp ' + (totalMasuk - totalKeluar).toLocaleString('id-ID');
 
-        tbody.innerHTML += `
-            <tr class="border-b hover:bg-slate-50">
-                <td class="p-2 text-slate-500">${row[0]}</td>
-                <td class="p-2 font-medium">${row[1]}</td>
-                <td class="p-2 text-right text-emerald-600">${masuk > 0 ? 'Rp ' + masuk.toLocaleString('id-ID') : '-'}</td>
-                <td class="p-2 text-right text-rose-600">${keluar > 0 ? 'Rp ' + keluar.toLocaleString('id-ID') : '-'}</td>
-            </tr>
-        `;
+    // Ambil maksimal 10 transaksi terakhir (dibalik agar data yang baru diinput muncul di atas)
+    let dataTerbalik = [...data].reverse();
+    let data10Terakhir = dataTerbalik.slice(0, 10);
+
+    data10Terakhir.forEach(row => {
+        if (row[0]) {
+            let masuk = parseFloat(row[2]) || 0;
+            let keluar = parseFloat(row[3]) || 0;
+
+            tbody.innerHTML += `
+                <tr class="border-b hover:bg-slate-50">
+                    <td class="p-2 text-slate-500">${row[0]}</td>
+                    <td class="p-2 font-medium">${row[1]}</td>
+                    <td class="p-2 text-right text-emerald-600">${masuk > 0 ? 'Rp ' + masuk.toLocaleString('id-ID') : '-'}</td>
+                    <td class="p-2 text-right text-rose-600">${keluar > 0 ? 'Rp ' + keluar.toLocaleString('id-ID') : '-'}</td>
+                </tr>
+            `;
+        }
     });
 }
 
@@ -108,23 +88,6 @@ async function muatHalamanPengurus() {
     });
 }
 
-// Fungsi Export Laporan ke PDF
-function exportPDF() {
-    let bulanPilih = document.getElementById('pilih-bulan').value;
-    let element = document.getElementById('area-pdf');
-    
-    let opt = {
-        margin:       10,
-        filename:     `Laporan-Keuangan-RT01-${bulanPilih}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
-    // Proses unduh PDF otomatis dari web
-    html2pdf().from(element).set(opt).save();
-}
-
 async function kirimDataKas(e) {
     e.preventDefault();
     let btn = document.getElementById('btn-simpan');
@@ -143,8 +106,8 @@ async function kirimDataKas(e) {
         alert('Data kas berhasil disimpan!');
         document.getElementById('form-kas').reset();
         
-        // Perbarui data lokal secara otomatis tanpa reload halaman
-        await muatDataAwal();
+        // Refresh tabel otomatis tanpa reload halaman
+        await muatHalamanKas();
         
         btn.innerText = 'Simpan Transaksi';
         btn.disabled = false;
@@ -153,5 +116,4 @@ async function kirimDataKas(e) {
         btn.innerText = 'Simpan Transaksi';
         btn.disabled = false;
     }
-       }
-            
+}
