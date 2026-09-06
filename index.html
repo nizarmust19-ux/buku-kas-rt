@@ -3,107 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buku Kas RT Online</title>
-    <!-- Menggunakan Tailwind CSS -->
+    <title>Keuangan RT 01 RW 03</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 text-gray-800">
-    <div class="max-w-4xl mx-auto p-4 sm:p-6">
-        <!-- Header -->
-        <header class="bg-blue-600 text-white p-6 rounded-xl shadow-md mb-6">
-            <h1 class="text-2xl font-bold">Buku Kas RT</h1>
-            <p class="text-sm opacity-90">Laporan Transparansi Keuangan Warga</p>
-        </header>
+<body class="bg-slate-100 text-slate-800 font-sans pb-12">
 
-        <!-- Ringkasan Saldo (Dashboard Cards) -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-blue-500">
-                <p class="text-xs text-gray-500 font-semibold uppercase">Total Saldo Kas</p>
-                <p id="total-saldo" class="text-xl font-bold text-gray-800">Rp 0</p>
+    <!-- Header Navbar -->
+    <header class="bg-blue-700 text-white shadow-md">
+        <div class="max-w-xl mx-auto p-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-lg font-bold">RT 01 / RW 03</h1>
+                <p class="text-xs text-blue-200">Sistem Transparansi Keuangan Warga</p>
             </div>
-            <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-green-500">
-                <p class="text-xs text-gray-500 font-semibold uppercase">Total Pemasukan</p>
-                <p id="total-pemasukan" class="text-xl font-bold text-green-600">Rp 0</p>
-            </div>
-            <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-red-500">
-                <p class="text-xs text-gray-500 font-semibold uppercase">Total Pengeluaran</p>
-                <p id="total-pengeluaran" class="text-xl font-bold text-red-600">Rp 0</p>
-            </div>
+            <button onclick="bukaAdmin()" class="bg-blue-600 hover:bg-blue-800 text-xs px-3 py-2 rounded-lg border border-blue-500 transition font-medium">
+                🔑 Login Pengurus
+            </button>
         </div>
+    </header>
 
-        <!-- Tabel Transaksi -->
-        <div class="bg-white rounded-xl shadow-md overflow-hidden p-4 sm:p-6">
-            <h2 class="text-lg font-semibold mb-4 text-gray-700">Daftar Transaksi</h2>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-gray-100 border-b text-sm text-gray-600">
-                            <th class="p-3">Tanggal</th>
-                            <th class="p-3">Uraian</th>
-                            <th class="p-3 text-right">Pemasukan</th>
-                            <th class="p-3 text-right">Pengeluaran</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabel-kas" class="text-sm divide-y">
-                        <tr>
-                            <td colspan="4" class="p-4 text-center text-gray-500">Memuat data kas...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+    <!-- Navigasi Tab Menu -->
+    <div class="max-w-xl mx-auto px-4 mt-4">
+        <div class="flex bg-white rounded-xl shadow-sm p-1">
+            <button onclick="gantiTab('kas')" id="tab-kas" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white transition">Laporan Kas</button>
+            <button onclick="gantiTab('pengurus')" id="tab-pengurus" class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 transition">Data Pengurus</button>
         </div>
     </div>
 
-    <!-- Script Kalkulator & Pembaca CSV -->
+    <!-- Konten Utama -->
+    <main class="max-w-xl mx-auto p-4 space-y-4">
+
+        <!-- TAB LAPORAN KAS -->
+        <section id="section-kas" class="space-y-4">
+            <!-- Kartu Ringkasan Saldo -->
+            <div class="grid grid-cols-3 gap-2">
+                <div class="bg-white p-3 rounded-xl shadow-sm border-t-4 border-blue-600">
+                    <p class="text-[10px] text-slate-400 uppercase font-bold">Saldo Akhir</p>
+                    <p id="txt-saldo" class="text-sm sm:text-base font-extrabold text-slate-800">Rp 0</p>
+                </div>
+                <div class="bg-white p-3 rounded-xl shadow-sm border-t-4 border-emerald-500">
+                    <p class="text-[10px] text-slate-400 uppercase font-bold">Pemasukan</p>
+                    <p id="txt-masuk" class="text-sm sm:text-base font-extrabold text-emerald-600">Rp 0</p>
+                </div>
+                <div class="bg-white p-3 rounded-xl shadow-sm border-t-4 border-rose-500">
+                    <p class="text-[10px] text-slate-400 uppercase font-bold">Pengeluaran</p>
+                    <p id="txt-keluar" class="text-sm sm:text-base font-extrabold text-rose-600">Rp 0</p>
+                </div>
+            </div>
+
+            <!-- Tabel Transaksi -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden p-4">
+                <h2 class="text-sm font-bold text-slate-700 mb-3">Riwayat Transaksi Kas</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 border-b">
+                                <th class="p-2">Tanggal</th>
+                                <th class="p-2">Uraian</th>
+                                <th class="p-2 text-right">Masuk</th>
+                                <th class="p-2 text-right">Keluar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabel-transaksi" class="divide-y">
+                            <tr><td colspan="4" class="p-4 text-center text-slate-400">Memuat data kas...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB DATA PENGURUS -->
+        <section id="section-pengurus" class="space-y-3 hidden">
+            <div class="bg-white rounded-xl shadow-sm p-4">
+                <h2 class="text-sm font-bold text-slate-700 mb-3">Daftar Pengurus RT 01 RW 03</h2>
+                <div id="list-pengurus" class="space-y-2">
+                    <p class="text-xs text-slate-400 text-center py-4">Memuat data pengurus...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FORM INPUT ADMIN (Tersembunyi Awalnya) -->
+        <section id="section-admin" class="bg-white rounded-xl shadow-sm p-4 hidden border-2 border-blue-200">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-sm font-bold text-blue-700">✍️ Tambah Kas Baru (Admin)</h2>
+                <button onclick="tutupAdmin()" class="text-xs text-rose-500 font-bold hover:underline">Tutup</button>
+            </div>
+            <form id="form-kas" onsubmit="kirimDataKas(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-1">Tanggal</label>
+                    <input type="date" id="input-tgl" required class="w-full p-2 border rounded-lg bg-slate-50">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-1">Uraian / Keterangan</label>
+                    <input type="text" id="input-uraian" placeholder="Contoh: Iuran Warga Bulanan" required class="w-full p-2 border rounded-lg bg-slate-50">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1">Pemasukan (Rp)</label>
+                        <input type="number" id="input-masuk" placeholder="0" class="w-full p-2 border rounded-lg bg-slate-50">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1">Pengeluaran (Rp)</label>
+                        <input type="number" id="input-keluar" placeholder="0" class="w-full p-2 border rounded-lg bg-slate-50">
+                    </div>
+                </div>
+                <button type="submit" id="btn-simpan" class="w-full bg-blue-600 text-white font-bold p-2.5 rounded-lg hover:bg-blue-700 transition">Simpan Transaksi</button>
+            </form>
+        </section>
+
+    </main>
+
     <script>
-        // Ganti URL di bawah ini dengan Link CSV dari "Publish to Web" Google Sheets Anda
-        const csvUrl = 'https://docs.google.com/spreadsheets/d/1FcoyGlmQYV4nFkAuePmT0SXC4moIU_8K0M9TTPftFs0/edit?usp=drivesdk';
+        // --- KONFIGURASI LINK GOOGLE SHEETS ANDA ---
+        const csvKasUrl = 'MASUKKAN_LINK_CSV_SHEET_KAS_DI_SINI';
+        const csvPengurusUrl = 'MASUKKAN_LINK_CSV_SHEET_PENGURUS_DI_SINI';
+        const scriptWebUrl = 'MASUKKAN_URL_WEB_APP_APPS_SCRIPT_DI_SINI';
+        const passwordAdmin = 'rt0103'; // Ganti password admin di sini
 
-        fetch(csvUrl)
-            .then(response => response.text())
-            .then(data => {
-                const rows = data.split('\n').map(row => row.split(','));
-                const tbody = document.getElementById('tabel-kas');
-                tbody.innerHTML = '';
+        // Ambil Data Saat Halaman Dibuka
+        window.onload = function() {
+            muatDataKas();
+            muatDataPengurus();
+        }
 
-                let sumMasukan = 0;
-                let sumPengeluaran = 0;
+        function gantiTab(tab) {
+            document.getElementById('section-kas').classList.toggle('hidden', tab !== 'kas');
+            document.getElementById('section-pengurus').classList.toggle('hidden', tab !== 'pengurus');
+            document.getElementById('tab-kas').className = tab === 'kas' ? 'flex-1 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white transition' : 'flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 transition';
+            document.getElementById('tab-pengurus').className = tab === 'pengurus' ? 'flex-1 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white transition' : 'flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 transition';
+        }
 
-                for (let i = 1; i < rows.length; i++) {
-                    const cols = rows[i];
-                    if (cols.length >= 4 && cols[0].trim() !== "") {
-                        const tgl = cols[0].replace(/"/g, '').trim();
-                        const uraian = cols[1].replace(/"/g, '').trim();
-                        
-                        // Bersihkan format angka dari simbol titik/koma jika ada
-                        const masukVal = parseFloat(cols[2] ? cols[2].replace(/"/g, '').replace(/[^0-9.-]+/g, "") : 0) || 0;
-                        const keluarVal = parseFloat(cols[3] ? cols[3].replace(/"/g, '').replace(/[^0-9.-]+/g, "") : 0) || 0;
+        function bukaAdmin() {
+            let pass = prompt("Masukkan Password Pengurus RT:");
+            if (pass === passwordAdmin) {
+                document.getElementById('section-admin').classList.remove('hidden');
+                document.getElementById('section-admin').scrollIntoView({ behavior: 'smooth' });
+            } else if (pass !== null) {
+                alert("Password salah!");
+            }
+        }
 
-                        sumMasukan += masukVal;
-                        sumPengeluaran += keluarVal;
+        function tutupAdmin() {
+            document.getElementById('section-admin').classList.add('hidden');
+        }
 
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td class="p-3">${tgl}</td>
-                            <td class="p-3">${uraian}</td>
-                            <td class="p-3 text-right text-green-600 font-medium">${masukVal > 0 ? 'Rp ' + masukVal.toLocaleString('id-ID') : '-'}</td>
-                            <td class="p-3 text-right text-red-600 font-medium">${keluarVal > 0 ? 'Rp ' + kelurVal ? 'Rp ' + keluarVal.toLocaleString('id-ID') : '-' : '-'}</td>
-                        `;
-                        tbody.appendChild(tr);
+        // Fungsi Parsing CSV Sederhana
+        function parseCSV(text) {
+            let lines = text.split("\n");
+            let result = [];
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                let currentLine = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                result.push(currentLine.map(val => val.replace(/^"|"$/g, '').trim()));
+            }
+            return result;
+        }
+
+        function muatDataKas() {
+            fetch(csvKasUrl)
+                .then(res => res.text())
+                .then(text => {
+                    let data = parseCSV(text);
+                    let tbody = document.getElementById('tabel-transaksi');
+                    tbody.innerHTML = '';
+                    let totalMasuk = 0, totalKeluar = 0;
+
+                    if(data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada data kas.</td></tr>`;
+                        return;
                     }
-                }
 
-                let totalSaldoAkhir = sumMasukan - sumPengeluaran;
+                    data.forEach(row => {
+                        if (row[0]) {
+                            let masuk = parseFloat(row[2]) || 0;
+                            let keluar = parseFloat(row[3]) || 0;
+                            totalMasuk += masuk;
+                            totalKeluar += keluar;
 
-                // Tampilkan hasil kalkulasi ke kotak ringkasan atas
-                document.getElementById('total-pemasukan').innerText = 'Rp ' + sumMasukan.toLocaleString('id-ID');
-                document.getElementById('total-pengeluaran').innerText = 'Rp ' + sumPengeluaran.toLocaleString('id-ID');
-                document.getElementById('total-saldo').innerText = 'Rp ' + totalSaldoAkhir.toLocaleString('id-ID');
+                            tbody.innerHTML += `
+                                <tr class="border-b hover:bg-slate-50">
+                                    <td class="p-2 text-slate-500">${row[0]}</td>
+                                    <td class="p-2 font-medium">${row[1]}</td>
+                                    <td class="p-2 text-right text-emerald-600">${masuk > 0 ? 'Rp ' + masuk.toLocaleString('id-ID') : '-'}</td>
+                                    <td class="p-2 text-right text-rose-600">${keluar > 0 ? 'Rp ' + keluar.toLocaleString('id-ID') : '-'}</td>
+                                </tr>
+                            `;
+                        }
+                    });
+
+                    document.getElementById('txt-masuk').innerText = 'Rp ' + totalMasuk.toLocaleString('id-ID');
+                    document.getElementById('txt-keluar').innerText = 'Rp ' + totalKeluar.toLocaleString('id-ID');
+                    document.getElementById('txt-saldo').innerText = 'Rp ' + (totalMasuk - totalKeluar).toLocaleString('id-ID');
+                }).catch(err => console.error(err));
+        }
+
+        function muatDataPengurus() {
+            fetch(csvPengurusUrl)
+                .then(res => res.text())
+                .then(text => {
+                    let data = parseCSV(text);
+                    let list = document.getElementById('list-pengurus');
+                    list.innerHTML = '';
+
+                    data.forEach(row => {
+                        if (row[0]) {
+                            list.innerHTML += `
+                                <div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg border text-xs">
+                                    <div>
+                                        <p class="font-bold text-slate-800">${row[1]}</p>
+                                        <p class="text-slate-500 text-[11px]">${row[0]}</p>
+                                    </div>
+                                    <a href="https://wa.me/${row[2]}" target="_blank" class="bg-emerald-500 text-white px-3 py-1.5 rounded-md font-semibold hover:bg-emerald-600 transition">WhatsApp</a>
+                                </div>
+                            `;
+                        }
+                    });
+                }).catch(err => console.error(err));
+        }
+
+        function kirimDataKas(e) {
+            e.preventDefault();
+            let btn = document.getElementById('btn-simpan');
+            btn.innerText = 'Menyimpan...';
+            btn.disabled = true;
+
+            let payload = {
+                tanggal: document.getElementById('input-tgl').value,
+                uraian: document.getElementById('input-uraian').value,
+                pemasukan: document.getElementById('input-masuk').value || 0,
+                pengeluaran: document.getElementById('input-keluar').value || 0
+            };
+
+            fetch(scriptWebUrl, {
+                method: 'POST',
+                body: JSON.stringify(payload)
             })
-            .catch(error => {
-                console.error('Gagal memuat data:', error);
-                document.getElementById('tabel-kas').innerHTML = `<tr><td colspan="4" class="p-4 text-center text-red-500">Gagal memuat data kas. Periksa kembali link CSV Anda.</td></tr>`;
+            .then(res => res.json())
+            .then(res => {
+                alert('Data kas berhasil disimpan!');
+                document.getElementById('form-kas').reset();
+                btn.innerText = 'Simpan Transaksi';
+                btn.disabled = false;
+                tutupAdmin();
+                muatDataKas(); // Refresh tabel otomatis
+            })
+            .catch(err => {
+                alert('Gagal menyimpan.');
+                btn.innerText = 'Simpan Transaksi';
+                btn.disabled = false;
             });
+        }
     </script>
 </body>
 </html>
