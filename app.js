@@ -1,14 +1,22 @@
 // --- MODUL UTAMA APLIKASI (CONTROLLER) ---
+let cacheDataKas = []; // Menyimpan data mentah agar filter cepat
+
 window.onload = function() {
-    muatHalamanKas();
+    // Set default input bulan ke bulan saat ini (Format: YYYY-MM)
+    let sekarang = new Date();
+    let tahun = sekarang.getFullYear();
+    let bulan = String(sekarang.getMonth() + 1).padStart(2, '0');
+    document.getElementById('pilih-bulan').value = `${tahun}-${bulan}`;
+
+    muatDataAwal();
     muatHalamanPengurus();
 }
 
 function gantiTab(tab) {
-    document.getElementById('section-kas').classList.toggle('hidden', tab !== 'kas');
+    document.getElementById('section-laporan').classList.toggle('hidden', tab !== 'laporan');
     document.getElementById('section-pengurus').classList.toggle('hidden', tab !== 'pengurus');
     
-    document.getElementById('tab-kas').className = tab === 'kas' 
+    document.getElementById('tab-laporan').className = tab === 'laporan' 
         ? 'flex-1 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white transition' 
         : 'flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 transition';
         
@@ -17,38 +25,62 @@ function gantiTab(tab) {
         : 'flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 transition';
 }
 
-async function muatHalamanKas() {
-    let data = await ambilDataKas();
+async function muatDataAwal() {
+    cacheDataKas = await ambilDataKas();
+    filterDataBulan();
+}
+
+// Fungsi untuk menyaring data berdasarkan bulan yang dipilih di dropdown
+function filterDataBulan() {
+    let bulanPilihan = document.getElementById('pilih-bulan').value; // Contoh: "2026-06"
     let tbody = document.getElementById('tabel-transaksi');
     tbody.innerHTML = '';
-    let totalMasuk = 0, totalKeluar = 0;
+    
+    let totalMasukBulanIni = 0;
+    let totalKeluarBulanIni = 0;
+    let transaksiBulanIni = [];
 
-    if(data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada data kas.</td></tr>`;
-        return;
-    }
-
-    data.forEach(row => {
-        if (row[0]) {
+    // Filter data sesuai bulan
+    cacheDataKas.forEach(row => {
+        let tgl = row[0]; // Kolom tanggal (YYYY-MM-DD)
+        if (tgl && tgl.startsWith(bulanPilihan)) {
             let masuk = parseFloat(row[2]) || 0;
             let keluar = parseFloat(row[3]) || 0;
-            totalMasuk += masuk;
-            totalKeluar += keluar;
-
-            tbody.innerHTML += `
-                <tr class="border-b hover:bg-slate-50">
-                    <td class="p-2 text-slate-500">${row[0]}</td>
-                    <td class="p-2 font-medium">${row[1]}</td>
-                    <td class="p-2 text-right text-emerald-600">${masuk > 0 ? 'Rp ' + masuk.toLocaleString('id-ID') : '-'}</td>
-                    <td class="p-2 text-right text-rose-600">${keluar > 0 ? 'Rp ' + keluar.toLocaleString('id-ID') : '-'}</td>
-                </tr>
-            `;
+            totalMasukBulanIni += masuk;
+            totalKeluarBulanIni += keluar;
+            transaksiBulanIni.push(row);
         }
     });
 
-    document.getElementById('txt-masuk').innerText = 'Rp ' + totalMasuk.toLocaleString('id-ID');
-    document.getElementById('txt-keluar').innerText = 'Rp ' + totalKeluar.toLocaleString('id-ID');
-    document.getElementById('txt-saldo').innerText = 'Rp ' + (totalMasuk - totalKeluar).toLocaleString('id-ID');
+    // Update Kartu Ringkasan
+    document.getElementById('txt-masuk').innerText = 'Rp ' + totalMasukBulanIni.toLocaleString('id-ID');
+    document.getElementById('txt-keluar').innerText = 'Rp ' + totalKeluarBulanIni.toLocaleString('id-ID');
+    document.getElementById('txt-saldo').innerText = 'Rp ' + (totalMasukBulanIni - totalKeluarBulanIni).toLocaleString('id-ID');
+
+    // Tampilkan beberapa baris transaksi terbaru pada bulan tersebut (maksimal 5 baris)
+    if(transaksiBulanIni.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Tidak ada transaksi pada bulan ini.</td></tr>`;
+        document.getElementById('info-jumlah-trx').innerText = "0 transaksi";
+        return;
+    }
+
+    // Ambil 5 transaksi teratas saja untuk tampilan ringkas
+    let transaksiRingkas = transaksiBulanIni.slice(0, 5);
+    document.getElementById('info-jumlah-trx').innerText = `Menampilkan ${transaksiRingkas.length} dari ${transaksiBulanIni.length} transaksi`;
+
+    transaksiRingkas.forEach(row => {
+        let masuk = parseFloat(row[2]) || 0;
+        let keluar = parseFloat(row[3]) || 0;
+
+        tbody.innerHTML += `
+            <tr class="border-b hover:bg-slate-50">
+                <td class="p-2 text-slate-500">${row[0]}</td>
+                <td class="p-2 font-medium">${row[1]}</td>
+                <td class="p-2 text-right text-emerald-600">${masuk > 0 ? 'Rp ' + masuk.toLocaleString('id-ID') : '-'}</td>
+                <td class="p-2 text-right text-rose-600">${keluar > 0 ? 'Rp ' + keluar.toLocaleString('id-ID') : '-'}</td>
+            </tr>
+        `;
+    });
 }
 
 async function muatHalamanPengurus() {
@@ -76,6 +108,23 @@ async function muatHalamanPengurus() {
     });
 }
 
+// Fungsi Export Laporan ke PDF
+function exportPDF() {
+    let bulanPilih = document.getElementById('pilih-bulan').value;
+    let element = document.getElementById('area-pdf');
+    
+    let opt = {
+        margin:       10,
+        filename:     `Laporan-Keuangan-RT01-${bulanPilih}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    // Proses unduh PDF otomatis dari web
+    html2pdf().from(element).set(opt).save();
+}
+
 async function kirimDataKas(e) {
     e.preventDefault();
     let btn = document.getElementById('btn-simpan');
@@ -94,16 +143,15 @@ async function kirimDataKas(e) {
         alert('Data kas berhasil disimpan!');
         document.getElementById('form-kas').reset();
         
-        // Perbarui tabel secara langsung TANPA reload halaman (status login tetap aktif!)
-        await muatHalamanKas();
+        // Perbarui data lokal secara otomatis tanpa reload halaman
+        await muatDataAwal();
         
         btn.innerText = 'Simpan Transaksi';
         btn.disabled = false;
-        
-        // Formulir admin dibiarkan terbuka agar bisa langsung input data berikutnya jika mau
     } catch (err) {
         alert('Gagal menyimpan.');
         btn.innerText = 'Simpan Transaksi';
         btn.disabled = false;
     }
-}
+       }
+            
