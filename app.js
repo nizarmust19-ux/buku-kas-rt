@@ -47,23 +47,27 @@ async function muatHalamanKas() {
     document.getElementById('txt-keluar').innerText = 'Rp ' + totalKeluar.toLocaleString('id-ID');
     document.getElementById('txt-saldo').innerText = 'Rp ' + (totalMasuk - totalKeluar).toLocaleString('id-ID');
 
-    let dataTerbalik = [...data].reverse();
-    let data10Terakhir = dataTerbalik.slice(0, 10);
+    // URUTKAN OTOMATIS BERDASARKAN TANGGAL TERBARU (Kas)
+    let dataUrut = data.filter(row => row[0]).sort((a, b) => {
+        let tglA = new Date(a[0]);
+        let tglB = new Date(b[0]);
+        return tglB - tglA; // Tanggal terbaru di atas
+    });
+
+    let data10Terakhir = dataUrut.slice(0, 10);
 
     data10Terakhir.forEach(row => {
-        if (row[0]) {
-            let masuk = parseFloat(row[2]) || 0;
-            let keluar = parseFloat(row[3]) || 0;
+        let masuk = parseFloat(row[2]) || 0;
+        let keluar = parseFloat(row[3]) || 0;
 
-            tbody.innerHTML += `
-                <tr class="border-b hover:bg-slate-50">
-                    <td class="p-2 text-slate-500">${row[0]}</td>
-                    <td class="p-2 font-medium">${row[1]}</td>
-                    <td class="p-2 text-right text-emerald-600">${masuk > 0 ? 'Rp ' + masuk.toLocaleString('id-ID') : '-'}</td>
-                    <td class="p-2 text-right text-rose-600">${keluar > 0 ? 'Rp ' + keluar.toLocaleString('id-ID') : '-'}</td>
-                </tr>
-            `;
-        }
+        tbody.innerHTML += `
+            <tr class="border-b hover:bg-slate-50">
+                <td class="p-2 text-slate-500">${row[0]}</td>
+                <td class="p-2 font-medium">${row[1]}</td>
+                <td class="p-2 text-right text-emerald-600">${masuk > 0 ? 'Rp ' + masuk.toLocaleString('id-ID') : '-'}</td>
+                <td class="p-2 text-right text-rose-600">${keluar > 0 ? 'Rp ' + keluar.toLocaleString('id-ID') : '-'}</td>
+            </tr>
+        `;
     });
 }
 
@@ -164,10 +168,17 @@ async function muatDaftarSaran() {
             return;
         }
 
-        // Tampilkan 5 pesan terbaru secara terbalik
-        let dataTerbalik = [...data].reverse().slice(0, 5);
+        // URUTKAN OTOMATIS BERDASARKAN TANGGAL TERBARU (Pojok Warga)
+        let dataUrutSaran = [...data].sort((a, b) => {
+            let tglA = new Date(a.Tanggal || a[0]);
+            let tglB = new Date(b.Tanggal || b[0]);
+            return tglB - tglA; // Tanggal terbaru di atas
+        });
 
-        dataTerbalik.forEach(row => {
+        // Ambil 5 pesan terbaru
+        let data5Terakhir = dataUrutSaran.slice(0, 5);
+
+        data5Terakhir.forEach(row => {
             let nama = row.Nama || row[1] || 'Warga Anonim';
             let pesan = row.Pesan || row[2] || '';
             let tgl = row.Tanggal || row[0] || '';
@@ -188,3 +199,4 @@ async function muatDaftarSaran() {
         listContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">Gagal memuat pesan.</p>`;
     }
 }
+    
