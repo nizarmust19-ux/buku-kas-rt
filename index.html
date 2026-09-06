@@ -1,1 +1,258 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keuangan RT 01 RW 03</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans pb-12">
+
+    <!-- Header Navbar -->
+    <header class="bg-blue-700 text-white shadow-md">
+        <div class="max-w-xl mx-auto p-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-lg font-bold">RT 01 / RW 03</h1>
+                <p class="text-xs text-blue-200">Sistem Transparansi Keuangan Warga</p>
+            </div>
+            <button onclick="bukaAdmin()" class="bg-blue-600 hover:bg-blue-800 text-xs px-3 py-2 rounded-lg border border-blue-500 transition font-medium">
+                🔑 Login Pengurus
+            </button>
+        </div>
+    </header>
+
+    <!-- Navigasi Tab Menu -->
+    <div class="max-w-xl mx-auto px-4 mt-4">
+        <div class="flex bg-white rounded-xl shadow-sm p-1">
+            <button onclick="gantiTab('kas')" id="tab-kas" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white transition">Laporan Kas</button>
+            <button onclick="gantiTab('pengurus')" id="tab-pengurus" class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 transition">Data Pengurus</button>
+        </div>
+    </div>
+
+    <!-- Konten Utama -->
+    <main class="max-w-xl mx-auto p-4 space-y-4">
+
+        <!-- TAB LAPORAN KAS -->
+        <section id="section-kas" class="space-y-4">
+            <!-- Kartu Ringkasan Saldo -->
+            <div class="grid grid-cols-3 gap-2">
+                <div class="bg-white p-3 rounded-xl shadow-sm border-t-4 border-blue-600">
+                    <p class="text-[10px] text-slate-400 uppercase font-bold">Saldo Akhir</p>
+                    <p id="txt-saldo" class="text-sm sm:text-base font-extrabold text-slate-800">Rp 0</p>
+                </div>
+                <div class="bg-white p-3 rounded-xl shadow-sm border-t-4 border-emerald-500">
+                    <p class="text-[10px] text-slate-400 uppercase font-bold">Pemasukan</p>
+                    <p id="txt-masuk" class="text-sm sm:text-base font-extrabold text-emerald-600">Rp 0</p>
+                </div>
+                <div class="bg-white p-3 rounded-xl shadow-sm border-t-4 border-rose-500">
+                    <p class="text-[10px] text-slate-400 uppercase font-bold">Pengeluaran</p>
+                    <p id="txt-keluar" class="text-sm sm:text-base font-extrabold text-rose-600">Rp 0</p>
+                </div>
+            </div>
+
+            <!-- Tabel Transaksi -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden p-4">
+                <h2 class="text-sm font-bold text-slate-700 mb-3">Riwayat Transaksi Kas</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 border-b">
+                                <th class="p-2">Tanggal</th>
+                                <th class="p-2">Uraian</th>
+                                <th class="p-2 text-right">Masuk</th>
+                                <th class="p-2 text-right">Keluar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabel-transaksi" class="divide-y">
+                            <tr><td colspan="4" class="p-4 text-center text-slate-400">Memuat data kas...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB DATA PENGURUS -->
+        <section id="section-pengurus" class="space-y-3 hidden">
+            <div class="bg-white rounded-xl shadow-sm p-4">
+                <h2 class="text-sm font-bold text-slate-700 mb-3">Daftar Pengurus RT 01 RW 03</h2>
+                <div id="list-pengurus" class="space-y-2">
+                    <p class="text-xs text-slate-400 text-center py-4">Memuat data pengurus...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FORM INPUT ADMIN (Tersembunyi Awalnya) -->
+        <section id="section-admin" class="bg-white rounded-xl shadow-sm p-4 hidden border-2 border-blue-200">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-sm font-bold text-blue-700">✍️ Tambah Kas Baru (Admin)</h2>
+                <button onclick="tutupAdmin()" class="text-xs text-rose-500 font-bold hover:underline">Tutup</button>
+            </div>
+            <form id="form-kas" onsubmit="kirimDataKas(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-1">Tanggal</label>
+                    <input type="date" id="input-tgl" required class="w-full p-2 border rounded-lg bg-slate-50">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-1">Uraian / Keterangan</label>
+                    <input type="text" id="input-uraian" placeholder="Contoh: Iuran Warga Bulanan" required class="w-full p-2 border rounded-lg bg-slate-50">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1">Pemasukan (Rp)</label>
+                        <input type="number" id="input-masuk" placeholder="0" class="w-full p-2 border rounded-lg bg-slate-50">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1">Pengeluaran (Rp)</label>
+                        <input type="number" id="input-keluar" placeholder="0" class="w-full p-2 border rounded-lg bg-slate-50">
+                    </div>
+                </div>
+                <button type="submit" id="btn-simpan" class="w-full bg-blue-600 text-white font-bold p-2.5 rounded-lg hover:bg-blue-700 transition">Simpan Transaksi</button>
+            </form>
+        </section>
+
+    </main>
+
+    <script>
+        // --- KONFIGURASI LINK GOOGLE SHEETS ANDA ---
+        const csvKasUrl = 'MASUKKAN_LINK_CSV_SHEET_KAS_DI_SINI';
+        const csvPengurusUrl = 'MASUKKAN_LINK_CSV_SHEET_PENGURUS_DI_SINI';
+        const scriptWebUrl = 'MASUKKAN_URL_WEB_APP_APPS_SCRIPT_DI_SINI';
+        const passwordAdmin = 'rt0103'; // Ganti password admin di sini
+
+        // Ambil Data Saat Halaman Dibuka
+        window.onload = function() {
+            muatDataKas();
+            muatDataPengurus();
+        }
+
+        function gantiTab(tab) {
+            document.getElementById('section-kas').classList.toggle('hidden', tab !== 'kas');
+            document.getElementById('section-pengurus').classList.toggle('hidden', tab !== 'pengurus');
+            document.getElementById('tab-kas').className = tab === 'kas' ? 'flex-1 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white transition' : 'flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 transition';
+            document.getElementById('tab-pengurus').className = tab === 'pengurus' ? 'flex-1 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white transition' : 'flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 transition';
+        }
+
+        function bukaAdmin() {
+            let pass = prompt("Masukkan Password Pengurus RT:");
+            if (pass === passwordAdmin) {
+                document.getElementById('section-admin').classList.remove('hidden');
+                document.getElementById('section-admin').scrollIntoView({ behavior: 'smooth' });
+            } else if (pass !== null) {
+                alert("Password salah!");
+            }
+        }
+
+        function tutupAdmin() {
+            document.getElementById('section-admin').classList.add('hidden');
+        }
+
+        // Fungsi Parsing CSV Sederhana
+        function parseCSV(text) {
+            let lines = text.split("\n");
+            let result = [];
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                let currentLine = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                result.push(currentLine.map(val => val.replace(/^"|"$/g, '').trim()));
+            }
+            return result;
+        }
+
+        function muatDataKas() {
+            fetch(csvKasUrl)
+                .then(res => res.text())
+                .then(text => {
+                    let data = parseCSV(text);
+                    let tbody = document.getElementById('tabel-transaksi');
+                    tbody.innerHTML = '';
+                    let totalMasuk = 0, totalKeluar = 0;
+
+                    if(data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada data kas.</td></tr>`;
+                        return;
+                    }
+
+                    data.forEach(row => {
+                        if (row[0]) {
+                            let masuk = parseFloat(row[2]) || 0;
+                            let keluar = parseFloat(row[3]) || 0;
+                            totalMasuk += masuk;
+                            totalKeluar += keluar;
+
+                            tbody.innerHTML += `
+                                <tr class="border-b hover:bg-slate-50">
+                                    <td class="p-2 text-slate-500">${row[0]}</td>
+                                    <td class="p-2 font-medium">${row[1]}</td>
+                                    <td class="p-2 text-right text-emerald-600">${masuk > 0 ? 'Rp ' + masuk.toLocaleString('id-ID') : '-'}</td>
+                                    <td class="p-2 text-right text-rose-600">${keluar > 0 ? 'Rp ' + keluar.toLocaleString('id-ID') : '-'}</td>
+                                </tr>
+                            `;
+                        }
+                    });
+
+                    document.getElementById('txt-masuk').innerText = 'Rp ' + totalMasuk.toLocaleString('id-ID');
+                    document.getElementById('txt-keluar').innerText = 'Rp ' + totalKeluar.toLocaleString('id-ID');
+                    document.getElementById('txt-saldo').innerText = 'Rp ' + (totalMasuk - totalKeluar).toLocaleString('id-ID');
+                }).catch(err => console.error(err));
+        }
+
+        function muatDataPengurus() {
+            fetch(csvPengurusUrl)
+                .then(res => res.text())
+                .then(text => {
+                    let data = parseCSV(text);
+                    let list = document.getElementById('list-pengurus');
+                    list.innerHTML = '';
+
+                    data.forEach(row => {
+                        if (row[0]) {
+                            list.innerHTML += `
+                                <div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg border text-xs">
+                                    <div>
+                                        <p class="font-bold text-slate-800">${row[1]}</p>
+                                        <p class="text-slate-500 text-[11px]">${row[0]}</p>
+                                    </div>
+                                    <a href="https://wa.me/${row[2]}" target="_blank" class="bg-emerald-500 text-white px-3 py-1.5 rounded-md font-semibold hover:bg-emerald-600 transition">WhatsApp</a>
+                                </div>
+                            `;
+                        }
+                    });
+                }).catch(err => console.error(err));
+        }
+
+        function kirimDataKas(e) {
+            e.preventDefault();
+            let btn = document.getElementById('btn-simpan');
+            btn.innerText = 'Menyimpan...';
+            btn.disabled = true;
+
+            let payload = {
+                tanggal: document.getElementById('input-tgl').value,
+                uraian: document.getElementById('input-uraian').value,
+                pemasukan: document.getElementById('input-masuk').value || 0,
+                pengeluaran: document.getElementById('input-keluar').value || 0
+            };
+
+            fetch(scriptWebUrl, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(res => {
+                alert('Data kas berhasil disimpan!');
+                document.getElementById('form-kas').reset();
+                btn.innerText = 'Simpan Transaksi';
+                btn.disabled = false;
+                tutupAdmin();
+                muatDataKas(); // Refresh tabel otomatis
+            })
+            .catch(err => {
+                alert('Gagal menyimpan.');
+                btn.innerText = 'Simpan Transaksi';
+                btn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>
 
