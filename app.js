@@ -10,17 +10,18 @@ function gantiTab(tab) {
     document.getElementById('section-pengurus').classList.toggle('hidden', tab !== 'pengurus');
     document.getElementById('section-saran').classList.toggle('hidden', tab !== 'saran');
     
+    // Style tombol ikon navigasi
     document.getElementById('tab-laporan').className = tab === 'laporan' 
-        ? 'flex-1 py-2 font-semibold rounded-xl bg-blue-600 text-white transition shadow-sm' 
-        : 'flex-1 py-2 font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition';
+        ? 'flex flex-col items-center justify-center py-2.5 rounded-xl bg-blue-600 text-white transition shadow-sm space-y-1' 
+        : 'flex flex-col items-center justify-center py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1';
         
     document.getElementById('tab-pengurus').className = tab === 'pengurus' 
-        ? 'flex-1 py-2 font-semibold rounded-xl bg-blue-600 text-white transition shadow-sm' 
-        : 'flex-1 py-2 font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition';
+        ? 'flex flex-col items-center justify-center py-2.5 rounded-xl bg-blue-600 text-white transition shadow-sm space-y-1' 
+        : 'flex flex-col items-center justify-center py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1';
 
     document.getElementById('tab-saran').className = tab === 'saran' 
-        ? 'flex-1 py-2 font-semibold rounded-xl bg-blue-600 text-white transition shadow-sm' 
-        : 'flex-1 py-2 font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition';
+        ? 'flex flex-col items-center justify-center py-2.5 rounded-xl bg-blue-600 text-white transition shadow-sm space-y-1' 
+        : 'flex flex-col items-center justify-center py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1';
 }
 
 // --- MODUL LAPORAN KAS (UNLIMITED & SCROLL) ---
@@ -55,7 +56,7 @@ async function muatHalamanKas() {
         return tglB - tglA; // Tanggal terbaru di atas
     });
 
-    // TAMPILKAN SEMUA DATA (UNLIMITED) TANPA .slice()
+    // TAMPILKAN SEMUA DATA (UNLIMITED)
     dataUrut.forEach(row => {
         let masuk = parseFloat(row[2]) || 0;
         let keluar = parseFloat(row[3]) || 0;
@@ -77,7 +78,7 @@ async function muatHalamanPengurus() {
     list.innerHTML = '';
 
     if(data.length === 0) {
-        list.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada data pengurus.</p>`;
+        list.innerHTML = `<p class="text-xs sm:text-sm text-slate-400 text-center py-6">Belum ada data pengurus.</p>`;
         return;
     }
 
@@ -183,7 +184,7 @@ async function muatDaftarSaran() {
             return tglB - tglA; // Terbaru di atas
         });
 
-        // TAMPILKAN SEMUA PESAN (UNLIMITED) TANPA .slice()
+        // TAMPILKAN SEMUA PESAN (UNLIMITED)
         dataUrutSaran.forEach(row => {
             let nama = row.Nama || row[1] || 'Warga Anonim';
             let pesan = row.Pesan || row[2] || '';
