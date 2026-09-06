@@ -47,14 +47,14 @@ async function muatHalamanKas() {
     document.getElementById('txt-keluar').innerText = 'Rp ' + totalKeluar.toLocaleString('id-ID');
     document.getElementById('txt-saldo').innerText = 'Rp ' + (totalMasuk - totalKeluar).toLocaleString('id-ID');
 
-    // URUTKAN OTOMATIS BERDASARKAN TANGGAL TERBARU (Kas)
+    // URUTKAN DATA BERDASARKAN TANGGAL SECARA AKURAT (TERBARU DI ATAS)
     let dataUrut = data.filter(row => row[0]).sort((a, b) => {
         let tglA = new Date(a[0]);
         let tglB = new Date(b[0]);
-        return tglB - tglA; // Tanggal terbaru di atas
+        return tglB - tglA; // Tanggal terbesar/terbaru di atas
     });
 
-    let data10Terakhir = dataUrut.slice(0, 30);
+    let data10Terakhir = dataUrut.slice(0, 20);
 
     data10Terakhir.forEach(row => {
         let masuk = parseFloat(row[2]) || 0;
@@ -198,5 +198,5 @@ async function muatDaftarSaran() {
     } catch (e) {
         listContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">Gagal memuat pesan.</p>`;
     }
-}
-    
+                                             }
+                                           
