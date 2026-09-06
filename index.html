@@ -10,31 +10,27 @@
 
     <!-- Header Navbar -->
     <header class="bg-blue-700 text-white shadow-md">
-        <div class="max-w-xl mx-auto p-4 flex justify-between items-center">
-            <div>
-                <h1 class="text-lg font-bold">RT 01 / RW 03</h1>
-                <p class="text-xs text-blue-200">Sistem Transparansi Keuangan Warga</p>
-            </div>
-            <button onclick="bukaAdmin()" class="bg-blue-600 hover:bg-blue-800 text-xs px-3 py-2 rounded-lg border border-blue-500 transition font-medium">
-                🔑 Login Pengurus
-            </button>
+        <div class="max-w-xl mx-auto p-4">
+            <h1 class="text-lg font-bold">RT 01 / RW 03</h1>
+            <p class="text-xs text-blue-200">Sistem Transparansi Keuangan Warga</p>
         </div>
     </header>
 
-    <!-- Navigasi Tab Menu -->
+    <!-- Navigasi 3 Tab Menu -->
     <div class="max-w-xl mx-auto px-4 mt-4">
-        <div class="flex bg-white rounded-xl shadow-sm p-1">
-            <button onclick="gantiTab('laporan')" id="tab-laporan" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white transition">Laporan Keuangan</button>
-            <button onclick="gantiTab('pengurus')" id="tab-pengurus" class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 transition">Data Pengurus</button>
+        <div class="flex bg-white rounded-xl shadow-sm p-1 text-xs">
+            <button onclick="gantiTab('laporan')" id="tab-laporan" class="flex-1 py-2 font-semibold rounded-lg bg-blue-600 text-white transition">Keuangan</button>
+            <button onclick="gantiTab('pengurus')" id="tab-pengurus" class="flex-1 py-2 font-semibold rounded-lg text-slate-600 transition">Pengurus & Darurat</button>
+            <button onclick="gantiTab('saran')" id="tab-saran" class="flex-1 py-2 font-semibold rounded-lg text-slate-600 transition">Kotak Saran</button>
         </div>
     </div>
 
     <!-- Konten Utama -->
     <main class="max-w-xl mx-auto p-4 space-y-4">
 
-        <!-- TAB LAPORAN KEUANGAN -->
+        <!-- TAB 1: LAPORAN KEUANGAN -->
         <section id="section-laporan" class="space-y-4">
-            <!-- Kartu Ringkasan Saldo Keseluruhan -->
+            <!-- Kartu Ringkasan Saldo -->
             <div class="grid grid-cols-3 gap-2">
                 <div class="bg-white p-3 rounded-xl shadow-sm border-t-4 border-blue-600">
                     <p class="text-[10px] text-slate-400 uppercase font-bold">Saldo Akhir</p>
@@ -52,9 +48,7 @@
 
             <!-- Tabel Transaksi (10 Terakhir) -->
             <div class="bg-white rounded-xl shadow-sm overflow-hidden p-4">
-                <div class="flex justify-between items-center mb-3">
-                    <h2 class="text-sm font-bold text-slate-700">10 Transaksi Terakhir</h2>
-                </div>
+                <h2 class="text-sm font-bold text-slate-700 mb-3">10 Transaksi Terakhir</h2>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs">
                         <thead>
@@ -73,43 +67,96 @@
             </div>
         </section>
 
-        <!-- TAB DATA PENGURUS -->
-        <section id="section-pengurus" class="space-y-3 hidden">
+        <!-- TAB 2: PENGURUS & DARURAT -->
+        <section id="section-pengurus" class="space-y-4 hidden">
+            <!-- Daftar Pengurus -->
             <div class="bg-white rounded-xl shadow-sm p-4">
-                <h2 class="text-sm font-bold text-slate-700 mb-3">Daftar Pengurus RT 01 RW 03</h2>
+                <h2 class="text-sm font-bold text-slate-700 mb-3">👥 Daftar Pengurus RT 01 RW 03</h2>
                 <div id="list-pengurus" class="space-y-2">
                     <p class="text-xs text-slate-400 text-center py-4">Memuat data pengurus...</p>
                 </div>
             </div>
+
+            <!-- Kontak Darurat -->
+            <div class="bg-white rounded-xl shadow-sm p-4">
+                <h2 class="text-sm font-bold text-slate-700 mb-3">🚨 Nomor Penting & Darurat</h2>
+                <div class="space-y-2 text-xs">
+                    <div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg border">
+                        <div>
+                            <p class="font-bold text-slate-800">Pos Satpam / Keamanan RT</p>
+                            <p class="text-slate-500 text-[11px]">Layanan Ronda & Keamanan Warga</p>
+                        </div>
+                        <a href="tel:08123456789" class="bg-blue-600 text-white px-3 py-1.5 rounded-md font-semibold hover:bg-blue-700 transition">Telepon</a>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg border">
+                        <div>
+                            <p class="font-bold text-slate-800">Ambulans / Siaga Desa</p>
+                            <p class="text-slate-500 text-[11px]">Darurat Kesehatan / Medis</p>
+                        </div>
+                        <a href="tel:08987654321" class="bg-blue-600 text-white px-3 py-1.5 rounded-md font-semibold hover:bg-blue-700 transition">Telepon</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tombol Pemicu Form Input Kas Ber-Password -->
+            <div class="pt-2">
+                <button onclick="bukaFormInput()" class="w-full bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold py-3 rounded-xl shadow-sm transition flex items-center justify-center gap-2">
+                    🔒 Input Pemasukan / Pengeluaran Baru
+                </button>
+            </div>
+
+            <!-- FORM INPUT KAS (Tersembunyi Awalnya) -->
+            <div id="section-admin" class="bg-white rounded-xl shadow-sm p-4 hidden border-2 border-blue-200 space-y-3">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-sm font-bold text-blue-700">✍️ Form Input Transaksi Kas</h2>
+                    <button onclick="tutupFormInput()" class="text-xs text-rose-500 font-bold hover:underline">Tutup</button>
+                </div>
+                <form id="form-kas" onsubmit="kirimDataKas(event)" class="space-y-3 text-xs">
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1">Tanggal</label>
+                        <input type="date" id="input-tgl" required class="w-full p-2 border rounded-lg bg-slate-50">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1">Uraian / Keterangan</label>
+                        <input type="text" id="input-uraian" placeholder="Contoh: Iuran Warga Bulanan" required class="w-full p-2 border rounded-lg bg-slate-50">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-1">Pemasukan (Rp)</label>
+                            <input type="number" id="input-masuk" placeholder="0" class="w-full p-2 border rounded-lg bg-slate-50">
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-1">Pengeluaran (Rp)</label>
+                            <input type="number" id="input-keluar" placeholder="0" class="w-full p-2 border rounded-lg bg-slate-50">
+                        </div>
+                    </div>
+                    <button type="submit" id="btn-simpan" class="w-full bg-blue-600 text-white font-bold p-2.5 rounded-lg hover:bg-blue-700 transition">Simpan Transaksi</button>
+                </form>
+            </div>
         </section>
 
-        <!-- FORM INPUT ADMIN (Tersembunyi Awalnya) -->
-        <section id="section-admin" class="bg-white rounded-xl shadow-sm p-4 hidden border-2 border-blue-200">
-            <div class="flex justify-between items-center mb-3">
-                <h2 class="text-sm font-bold text-blue-700">✍️ Tambah Kas Baru (Admin)</h2>
-                <button onclick="tutupAdmin()" class="text-xs text-rose-500 font-bold hover:underline">Tutup</button>
+        <!-- TAB 3: KOTAK SARAN -->
+        <section id="section-saran" class="space-y-3 hidden">
+            <div class="bg-white rounded-xl shadow-sm p-4 space-y-3 text-xs">
+                <h2 class="text-sm font-bold text-slate-700">📥 Kotak Aspirasi & Saran Warga</h2>
+                <p class="text-slate-500">Sampaikan masukan, laporan fasilitas umum rusak, atau usulan kegiatan RT di sini.</p>
+                
+                <form id="form-saran" onsubmit="kirimSaran(event)" class="space-y-3 pt-2">
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1">Nama Warga</label>
+                        <input type="text" id="saran-nama" placeholder="Nama lengkap Anda" required class="w-full p-2 border rounded-lg bg-slate-50">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1">Nomor Rumah / Blok</label>
+                        <input type="text" id="saran-rumah" placeholder="Contoh: Blok B No. 12" required class="w-full p-2 border rounded-lg bg-slate-50">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1">Pesan / Masukan</label>
+                        <textarea id="saran-pesan" rows="3" placeholder="Tuliskan aspirasi atau laporan Anda..." required class="w-full p-2 border rounded-lg bg-slate-50"></textarea>
+                    </div>
+                    <button type="submit" id="btn-saran" class="w-full bg-blue-600 text-white font-bold p-2.5 rounded-lg hover:bg-blue-700 transition">Kirim Aspirasi</button>
+                </form>
             </div>
-            <form id="form-kas" onsubmit="kirimDataKas(event)" class="space-y-3 text-xs">
-                <div>
-                    <label class="block font-semibold text-slate-600 mb-1">Tanggal</label>
-                    <input type="date" id="input-tgl" required class="w-full p-2 border rounded-lg bg-slate-50">
-                </div>
-                <div>
-                    <label class="block font-semibold text-slate-600 mb-1">Uraian / Keterangan</label>
-                    <input type="text" id="input-uraian" placeholder="Contoh: Iuran Warga Bulanan" required class="w-full p-2 border rounded-lg bg-slate-50">
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block font-semibold text-slate-600 mb-1">Pemasukan (Rp)</label>
-                        <input type="number" id="input-masuk" placeholder="0" class="w-full p-2 border rounded-lg bg-slate-50">
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-slate-600 mb-1">Pengeluaran (Rp)</label>
-                        <input type="number" id="input-keluar" placeholder="0" class="w-full p-2 border rounded-lg bg-slate-50">
-                    </div>
-                </div>
-                <button type="submit" id="btn-simpan" class="w-full bg-blue-600 text-white font-bold p-2.5 rounded-lg hover:bg-blue-700 transition">Simpan Transaksi</button>
-            </form>
         </section>
 
     </main>
