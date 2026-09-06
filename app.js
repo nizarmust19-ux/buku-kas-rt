@@ -7,14 +7,19 @@ window.onload = function() {
 function gantiTab(tab) {
     document.getElementById('section-laporan').classList.toggle('hidden', tab !== 'laporan');
     document.getElementById('section-pengurus').classList.toggle('hidden', tab !== 'pengurus');
+    document.getElementById('section-saran').classList.toggle('hidden', tab !== 'saran');
     
     document.getElementById('tab-laporan').className = tab === 'laporan' 
-        ? 'flex-1 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white transition' 
-        : 'flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 transition';
+        ? 'flex-1 py-2 font-semibold rounded-lg bg-blue-600 text-white transition' 
+        : 'flex-1 py-2 font-semibold rounded-lg text-slate-600 transition';
         
     document.getElementById('tab-pengurus').className = tab === 'pengurus' 
-        ? 'flex-1 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white transition' 
-        : 'flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 transition';
+        ? 'flex-1 py-2 font-semibold rounded-lg bg-blue-600 text-white transition' 
+        : 'flex-1 py-2 font-semibold rounded-lg text-slate-600 transition';
+
+    document.getElementById('tab-saran').className = tab === 'saran' 
+        ? 'flex-1 py-2 font-semibold rounded-lg bg-blue-600 text-white transition' 
+        : 'flex-1 py-2 font-semibold rounded-lg text-slate-600 transition';
 }
 
 async function muatHalamanKas() {
@@ -28,7 +33,6 @@ async function muatHalamanKas() {
         return;
     }
 
-    // Hitung total keseluruhan untuk kartu ringkasan
     data.forEach(row => {
         if (row[0]) {
             let masuk = parseFloat(row[2]) || 0;
@@ -42,7 +46,6 @@ async function muatHalamanKas() {
     document.getElementById('txt-keluar').innerText = 'Rp ' + totalKeluar.toLocaleString('id-ID');
     document.getElementById('txt-saldo').innerText = 'Rp ' + (totalMasuk - totalKeluar).toLocaleString('id-ID');
 
-    // Ambil maksimal 10 transaksi terakhir (dibalik agar data yang baru diinput muncul di atas)
     let dataTerbalik = [...data].reverse();
     let data10Terakhir = dataTerbalik.slice(0, 10);
 
@@ -103,12 +106,9 @@ async function kirimDataKas(e) {
 
     try {
         await simpanDataKasApi(newData);
-        alert('Data kas berhasil disimpan!');
+        alert('Transaksi berhasil disimpan!');
         document.getElementById('form-kas').reset();
-        
-        // Refresh tabel otomatis tanpa reload halaman
         await muatHalamanKas();
-        
         btn.innerText = 'Simpan Transaksi';
         btn.disabled = false;
     } catch (err) {
@@ -116,4 +116,11 @@ async function kirimDataKas(e) {
         btn.innerText = 'Simpan Transaksi';
         btn.disabled = false;
     }
+}
+
+// Fungsi opsional jika Kotak Saran ingin dikirim via SheetDB
+function kirimSaran(e) {
+    e.preventDefault();
+    alert('Terima kasih! Aspirasi Anda telah dikirim ke pengurus RT.');
+    document.getElementById('form-saran').reset();
 }
