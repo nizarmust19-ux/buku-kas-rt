@@ -5,24 +5,24 @@ window.onload = function() {
     muatHalamanPengurus();
     muatDaftarSaran();
 }
-
 function gantiTab(tab) {
     document.getElementById('section-laporan').classList.toggle('hidden', tab !== 'laporan');
     document.getElementById('section-pengurus').classList.toggle('hidden', tab !== 'pengurus');
     document.getElementById('section-saran').classList.toggle('hidden', tab !== 'saran');
+    document.getElementById('section-panduan').classList.toggle('hidden', tab !== 'panduan');
     
-    document.getElementById('tab-laporan').className = tab === 'laporan' 
-        ? 'flex flex-col items-center justify-center py-2.5 rounded-xl bg-blue-600 text-white transition shadow-sm space-y-1' 
-        : 'flex flex-col items-center justify-center py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1';
-        
-    document.getElementById('tab-pengurus').className = tab === 'pengurus' 
-        ? 'flex flex-col items-center justify-center py-2.5 rounded-xl bg-blue-600 text-white transition shadow-sm space-y-1' 
-        : 'flex flex-col items-center justify-center py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1';
-
-    document.getElementById('tab-saran').className = tab === 'saran' 
-        ? 'flex flex-col items-center justify-center py-2.5 rounded-xl bg-blue-600 text-white transition shadow-sm space-y-1' 
-        : 'flex flex-col items-center justify-center py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1';
+    let tabs = ['laporan', 'pengurus', 'saran', 'panduan'];
+    tabs.forEach(t => {
+        let el = document.getElementById(`tab-${t}`);
+        if(el) {
+            el.className = tab === t 
+                ? 'flex flex-col items-center justify-center p-2 rounded-xl bg-blue-600 text-white transition space-y-1 font-medium' 
+                : 'flex flex-col items-center justify-center p-2 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1 font-medium';
+        }
+    });
 }
+
+
 
 // --- MODUL KAS (FILTER, WA, & PDF) ---
 async function muatHalamanKas() {
