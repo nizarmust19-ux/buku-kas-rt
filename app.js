@@ -12,28 +12,62 @@ function gantiTab(tab) {
     document.getElementById('section-saran').classList.toggle('hidden', tab !== 'saran');
     
     document.getElementById('tab-laporan').className = tab === 'laporan' 
-        ? 'flex flex-col items-center justify-center py-2.5 rounded-xl bg-blue-600 text-white transition shadow-sm space-y-1' 
-        : 'flex flex-col items-center justify-center py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1';
+        ? 'flex flex-col items-center justify-center py-2 rounded-xl bg-blue-600 text-white transition shadow-sm space-y-1' 
+        : 'flex flex-col items-center justify-center py-2 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1';
         
     document.getElementById('tab-pengurus').className = tab === 'pengurus' 
-        ? 'flex flex-col items-center justify-center py-2.5 rounded-xl bg-blue-600 text-white transition shadow-sm space-y-1' 
-        : 'flex flex-col items-center justify-center py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1';
+        ? 'flex flex-col items-center justify-center py-2 rounded-xl bg-blue-600 text-white transition shadow-sm space-y-1' 
+        : 'flex flex-col items-center justify-center py-2 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1';
 
     document.getElementById('tab-saran').className = tab === 'saran' 
-        ? 'flex flex-col items-center justify-center py-2.5 rounded-xl bg-blue-600 text-white transition shadow-sm space-y-1' 
-        : 'flex flex-col items-center justify-center py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1';
+        ? 'flex flex-col items-center justify-center py-2 rounded-xl bg-blue-600 text-white transition shadow-sm space-y-1' 
+        : 'flex flex-col items-center justify-center py-2 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1';
 }
 
-// --- MODUL KAS (FILTER, WA, & PDF) ---
+// --- MODUL ADMIN & PASSWORD ---
+function bukaModalAdmin() {
+    document.getElementById('modal-admin').classList.remove('hidden');
+    document.getElementById('input-password').value = '';
+}
+
+function bukaModalAdminFromMenu() {
+    bukaModalAdmin();
+}
+
+function tutupModalAdmin() {
+    document.getElementById('modal-admin').classList.add('hidden');
+    document.getElementById('modal-form-kas').classList.add('hidden');
+}
+
+function cekPassword() {
+    let pass = document.getElementById('input-password').value;
+    if (pass === 'rt0103') {
+        tutupModalAdmin();
+        document.getElementById('modal-form-kas').classList.remove('hidden');
+    } else {
+        alert('Password salah!');
+    }
+}
+
+// --- MODUL KAS (DEFAULT 30 HARI TERAKHIR & FILTER) ---
 async function muatHalamanKas() {
     seluruhDataKas = await ambilDataKas();
     isiPilihanBulan(seluruhDataKas);
+    
+    let selectBulan = document.getElementById('filter-bulan');
+    if (selectBulan) {
+        selectBulan.value = '30_hari';
+    }
+    
     filterDataLaporan();
 }
 
 function isiPilihanBulan(data) {
     let select = document.getElementById('filter-bulan');
-    select.innerHTML = '<option value="semua">Semua Periode</option>';
+    select.innerHTML = `
+        <option value="30_hari">30 Hari Terakhir</option>
+        <option value="semua">Semua Periode</option>
+    `;
     let setBulan = new Set();
 
     data.forEach(row => {
@@ -66,8 +100,33 @@ function filterDataLaporan() {
     let tbody = document.getElementById('tabel-transaksi');
     tbody.innerHTML = '';
 
+    let batas30Hari = new Date();
+    batas30Hari.setDate(batas30Hari.getDate() - 30);
+
+    let dataFiltered = seluruhDataKas.filter(row => {
+        if (!row[0]) return false;
+        let tglStr = String(row[0]).trim();
+        let tgl = new Date(tglStr);
+        
+        if (isNaN(tgl) && tglStr.includes('/')) {
+            let parts = tglStr.split('/');
+            if(parts.length === 3) tgl = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+        }
+
+        if (bulanDipilih === '30_hari') {
+            return !isNaN(tgl) && tgl >= batas30Hari;
+        }
+
+        if (bulanDipilih !== 'semua') {
+            return String(row[0]).includes(bulanDipilih);
+        }
+
+        return true;
+    });
+
+    let dataUrut = dataFiltered.sort((a, b) => new Date(b[0]) - new Date(a[0]));
+
     let totalMasuk = 0, totalKeluar = 0;
-    
     seluruhDataKas.forEach(row => {
         if (row[0]) {
             totalMasuk += parseFloat(row[2]) || 0;
@@ -75,17 +134,10 @@ function filterDataLaporan() {
         }
     });
 
+    // Tampilkan total keseluruhan saldo di kartu atas secara konsisten
     document.getElementById('txt-masuk').innerText = 'Rp ' + totalMasuk.toLocaleString('id-ID');
     document.getElementById('txt-keluar').innerText = 'Rp ' + totalKeluar.toLocaleString('id-ID');
     document.getElementById('txt-saldo').innerText = 'Rp ' + (totalMasuk - totalKeluar).toLocaleString('id-ID');
-
-    let dataFiltered = seluruhDataKas.filter(row => {
-        if (!row[0]) return false;
-        if (bulanDipilih === 'semua') return true;
-        return String(row[0]).includes(bulanDipilih);
-    });
-
-    let dataUrut = dataFiltered.sort((a, b) => new Date(b[0]) - new Date(a[0]));
 
     if (dataUrut.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">Tidak ada transaksi pada periode ini.</td></tr>`;
@@ -108,12 +160,14 @@ function filterDataLaporan() {
 }
 
 function bagikanKeWA() {
-    let filterVal = document.getElementById('filter-bulan').value;
-    let namaPeriode = "Semua Periode";
+    let bulanDipilih = document.getElementById('filter-bulan').value;
+    let namaPeriode = "30 Hari Terakhir";
     
-    if(filterVal !== 'semua') {
-        let [thn, bln] = filterVal.split('-');
+    if(bulanDipilih !== '30_hari' && bulanDipilih !== 'semua') {
+        let [thn, bln] = bulanDipilih.split('-');
         namaPeriode = new Date(thn, bln - 1).toLocaleString('id-ID', { month: 'long', year: 'numeric' });
+    } else if(bulanDipilih === 'semua') {
+        namaPeriode = "Semua Periode";
     }
 
     let totalM = document.getElementById('txt-masuk').innerText;
@@ -133,8 +187,8 @@ function bagikanKeWA() {
 }
 
 function unduhPDF() {
-    let filterVal = document.getElementById('filter-bulan').value;
-    let namaPeriode = filterVal !== 'semua' ? filterVal : "Semua_Periode";
+    let bulanDipilih = document.getElementById('filter-bulan').value;
+    let namaPeriode = bulanDipilih !== 'semua' && bulanDipilih !== '30_hari' ? bulanDipilih : "Riwayat_Transaksi";
     let element = document.getElementById('area-laporan-kas');
     
     let opt = {
@@ -262,4 +316,4 @@ async function muatDaftarSaran() {
     } catch (e) {
         listContainer.innerHTML = `<p class="text-xs sm:text-sm text-slate-400 text-center py-4">Gagal memuat pesan.</p>`;
     }
-                                                                                                                                                                                   }
+}
