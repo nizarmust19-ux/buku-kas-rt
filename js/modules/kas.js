@@ -34,7 +34,6 @@ function isiPilihanBulan(data) {
 
     let daftarSorted = Array.from(setBulan).sort().reverse();
     
-    // Tambahkan opsi Semua Periode di bagian bawah/atas sesuai selera
     select.innerHTML += `<option value="semua">Semua Periode</option>`;
     
     daftarSorted.forEach(b => {
@@ -43,14 +42,13 @@ function isiPilihanBulan(data) {
         select.innerHTML += `<option value="${b}">${namaBulan}</option>`;
     });
 
-    // SET DEFAULT KE BULAN BERJALAN JIKA ADA, JIKA TIDAK KE "semua"
     let d = new Date();
     let bulanIni = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     
     if (daftarSorted.includes(bulanIni)) {
         select.value = bulanIni;
     } else if (daftarSorted.length > 0) {
-        select.value = daftarSorted[0]; // Ambil bulan transaksi terakhir yang tersedia
+        select.value = daftarSorted[0];
     } else {
         select.value = 'semua';
     }
@@ -62,7 +60,7 @@ export function filterDataLaporan() {
     if(!tbody) return;
     tbody.innerHTML = '';
 
-    // 1. HITUNG SALDO KESELURUHAN (Sisa Saldo Kas Riil dari awal sampai akhir)
+    // 1. HITUNG SALDO KESELURUHAN (Seluruh transaksi dari awal sampai akhir tanpa filter)
     let totalMasukGlobal = 0, totalKeluarGlobal = 0;
     seluruhDataKas.forEach(row => {
         if (row[0]) {
@@ -72,17 +70,16 @@ export function filterDataLaporan() {
     });
     let saldoGlobal = totalMasukGlobal - totalKeluarGlobal;
 
-    // Tampilkan Saldo Keseluruhan ke kartu utama
+    // Tampilkan Saldo Keseluruhan ke kartu utama paling atas
     document.getElementById('txt-saldo').innerText = 'Rp ' + saldoGlobal.toLocaleString('id-ID');
 
-    // 2. FILTER DATA BERDASARKAN PILIHAN BULAN UNTUK TOTAL MASUK/KELUAR & TABEL
+    // 2. FILTER DATA UNTUK TABEL & TOTAL MASUK/KELUAR PERIODE TERKAIT
     let dataFiltered = seluruhDataKas.filter(row => {
         if (!row[0]) return false;
         if (bulanDipilih === 'semua') return true;
         return String(row[0]).includes(bulanDipilih);
     });
 
-    // Hitung total masuk & keluar HANYA untuk periode yang sedang dipilih
     let totalMasukPeriode = 0, totalKeluarPeriode = 0;
     dataFiltered.forEach(row => {
         if (row[0]) {
@@ -91,7 +88,7 @@ export function filterDataLaporan() {
         }
     });
 
-    // Tampilkan total masuk & keluar periode terkait ke kartu
+    // Tampilkan Total Masuk & Keluar sesuai filter bulan yang dipilih di bawahnya
     document.getElementById('txt-masuk').innerText = 'Rp ' + totalMasukPeriode.toLocaleString('id-ID');
     document.getElementById('txt-keluar').innerText = 'Rp ' + totalKeluarPeriode.toLocaleString('id-ID');
 
@@ -188,4 +185,5 @@ export async function kirimDataKas(e) {
         btn.innerText = 'Simpan Transaksi';
         btn.disabled = false;
     }
-        }
+                                                             }
+                           
