@@ -1,16 +1,19 @@
-let seluruhDataKas = [];
+Let seluruhDataKas = [];
 
 window.onload = function() {
     muatHalamanKas();
     muatHalamanPengurus();
     muatDaftarSaran();
 }
+
 function gantiTab(tab) {
+    // Mengatur visibilitas section
     document.getElementById('section-laporan').classList.toggle('hidden', tab !== 'laporan');
     document.getElementById('section-pengurus').classList.toggle('hidden', tab !== 'pengurus');
     document.getElementById('section-saran').classList.toggle('hidden', tab !== 'saran');
     document.getElementById('section-panduan').classList.toggle('hidden', tab !== 'panduan');
     
+    // Mengatur warna aktif / tidak aktif pada tombol navigasi (termasuk panduan)
     let tabs = ['laporan', 'pengurus', 'saran', 'panduan'];
     tabs.forEach(t => {
         let el = document.getElementById(`tab-${t}`);
@@ -21,8 +24,6 @@ function gantiTab(tab) {
         }
     });
 }
-
-
 
 // --- MODUL KAS (FILTER, WA, & PDF) ---
 async function muatHalamanKas() {
@@ -262,4 +263,4 @@ async function muatDaftarSaran() {
     } catch (e) {
         listContainer.innerHTML = `<p class="text-xs sm:text-sm text-slate-400 text-center py-4">Gagal memuat pesan.</p>`;
     }
-    }
+}
