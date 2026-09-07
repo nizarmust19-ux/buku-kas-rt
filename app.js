@@ -38,7 +38,15 @@ function isiPilihanBulan(data) {
 
     data.forEach(row => {
         if (row[0]) {
-            let tgl = new Date(row[0]);
+            // Ubah format string tanggal agar aman dibaca JS
+            let tglStr = String(row[0]).trim();
+            let tgl = new Date(tglStr);
+            
+            if (isNaN(tgl) && tglStr.includes('/')) {
+                let parts = tglStr.split('/');
+                if(parts.length === 3) tgl = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+            }
+
             if (!isNaN(tgl)) {
                 let keyBulan = `${tgl.getFullYear()}-${String(tgl.getMonth() + 1).padStart(2, '0')}`;
                 setBulan.add(keyBulan);
@@ -61,7 +69,6 @@ function filterDataLaporan() {
 
     let totalMasuk = 0, totalKeluar = 0;
     
-    // Hitung Total Kas Keseluruhan untuk Kartu Saldo Utama
     seluruhDataKas.forEach(row => {
         if (row[0]) {
             totalMasuk += parseFloat(row[2]) || 0;
@@ -73,11 +80,10 @@ function filterDataLaporan() {
     document.getElementById('txt-keluar').innerText = 'Rp ' + totalKeluar.toLocaleString('id-ID');
     document.getElementById('txt-saldo').innerText = 'Rp ' + (totalMasuk - totalKeluar).toLocaleString('id-ID');
 
-    // Filter Data Berdasarkan Pilihan Bulan
     let dataFiltered = seluruhDataKas.filter(row => {
         if (!row[0]) return false;
         if (bulanDipilih === 'semua') return true;
-        return row[0].startsWith(bulanDipilih);
+        return String(row[0]).includes(bulanDipilih);
     });
 
     let dataUrut = dataFiltered.sort((a, b) => new Date(b[0]) - new Date(a[0]));
@@ -102,7 +108,6 @@ function filterDataLaporan() {
     });
 }
 
-// Fitur Bagikan Rekap ke WA
 function bagikanKeWA() {
     let filterVal = document.getElementById('filter-bulan').value;
     let namaPeriode = "Semua Periode";
@@ -127,15 +132,9 @@ function bagikanKeWA() {
     window.open(urlWA, '_blank');
 }
 
-// Fitur Unduh PDF Laporan
 function unduhPDF() {
     let filterVal = document.getElementById('filter-bulan').value;
-    let namaPeriode = "Semua_Periode";
-    
-    if(filterVal !== 'semua') {
-        namaPeriode = filterVal;
-    }
-
+    let namaPeriode = filterVal !== 'semua' ? filterVal : "Semua_Periode";
     let element = document.getElementById('area-laporan-kas');
     
     let opt = {
@@ -263,4 +262,4 @@ async function muatDaftarSaran() {
     } catch (e) {
         listContainer.innerHTML = `<p class="text-xs sm:text-sm text-slate-400 text-center py-4">Gagal memuat pesan.</p>`;
     }
-}
+                                                                                                                                                                                                            }
