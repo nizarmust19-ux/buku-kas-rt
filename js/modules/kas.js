@@ -165,17 +165,25 @@ export async function kirimDataKas(e) {
     if (btn.disabled) return; 
 
     let tglInput = document.getElementById('input-tgl').value;
-    let uraianInput = document.getElementById('input-uraian').value.trim().toLowerCase();
+    let uraianInput = document.getElementById('input-uraian').value.trim();
+    let masukInput = document.getElementById('input-masuk').value;
+    let keluarInput = document.getElementById('input-keluar').value;
 
-    // Validasi: Cek apakah tanggal dan uraian yang sama persis sudah tercatat
+    // 1. VALIDASI: Form wajib diisi lengkap (Tanggal, Uraian, dan salah satu nominal Masuk/Keluar)
+    if (!tglInput || !uraianInput || (masukInput === '' && keluarInput === '')) {
+        alert('Mohon isi Tanggal, Uraian, serta Nominal Pemasukan atau Pengeluaran dengan benar!');
+        return;
+    }
+
+    // 2. CEK DUPLIKASI: Mencegah tanggal dan uraian yang kembar persis
     let sudahAda = seluruhDataKas.some(row => {
         let tglData = String(row[0]).trim();
         let uraianData = String(row[1]).trim().toLowerCase();
-        return tglData === tglInput && uraianData === uraianInput;
+        return tglData === tglInput && uraianData === uraianInput.toLowerCase();
     });
 
     if (sudahAda) {
-        alert(`Peringatan: Transaksi dengan tanggal "${tglInput}" dan uraian "${document.getElementById('input-uraian').value}" sudah pernah dicatat sebelumnya!`);
+        alert(`Peringatan: Transaksi dengan tanggal "${tglInput}" dan uraian "${uraianInput}" sudah pernah dicatat sebelumnya!`);
         return;
     }
 
@@ -184,9 +192,9 @@ export async function kirimDataKas(e) {
 
     let newData = {
         "Tanggal": tglInput,
-        "Uraian": document.getElementById('input-uraian').value,
-        "Pemasukan": document.getElementById('input-masuk').value || 0,
-        "Pengeluaran": document.getElementById('input-keluar').value || 0
+        "Uraian": uraianInput,
+        "Pemasukan": masukInput || 0,
+        "Pengeluaran": keluarInput || 0
     };
 
     try {
