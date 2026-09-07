@@ -30,38 +30,34 @@
                 </div>
             </div>
         </div>
-<!-- Menu Navigasi 5 Tombol (Termasuk Panduan) -->
-<div class="bg-white p-3 rounded-2xl shadow-sm border grid grid-cols-5 gap-1.5 text-center text-xs">
-    <button onclick="gantiTab('laporan')" id="tab-laporan" class="flex flex-col items-center justify-center p-2 rounded-xl bg-blue-600 text-white transition space-y-1 font-medium">
-        <span class="text-base">📊</span>
-        <span>Laporan</span>
-    </button>
-    <button onclick="bukaModalAdmin()" class="flex flex-col items-center justify-center p-2 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1 font-medium">
-        <span class="text-base">➕</span>
-        <span>Input Kas</span>
-    </button>
-    <button onclick="gantiTab('pengurus')" id="tab-pengurus" class="flex flex-col items-center justify-center p-2 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1 font-medium">
-        <span class="text-base">👥</span>
-        <span>Pengurus</span>
-    </button>
-    <button onclick="gantiTab('saran')" id="tab-saran" class="flex flex-col items-center justify-center p-2 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1 font-medium">
-        <span class="text-base">💬</span>
-        <span>Saran</span>
-    </button>
-    <button onclick="gantiTab('panduan')" id="tab-panduan" class="flex flex-col items-center justify-center p-2 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1 font-medium">
-        <span class="text-base">📖</span>
-        <span>Panduan</span>
-    </button>
-</div>
-        
+
+        <!-- ================= MENU NAVIGASI 5 TOMBOL ================= -->
+        <div class="bg-white p-3 rounded-2xl shadow-sm border grid grid-cols-5 gap-1.5 text-center text-xs">
+            <button onclick="gantiTab('laporan')" id="tab-laporan" class="flex flex-col items-center justify-center p-2 rounded-xl bg-blue-600 text-white transition space-y-1 font-medium">
+                <span class="text-base">📊</span>
+                <span>Laporan</span>
+            </button>
+            <button onclick="bukaModalAdmin()" class="flex flex-col items-center justify-center p-2 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1 font-medium">
+                <span class="text-base">➕</span>
+                <span>Input Kas</span>
+            </button>
+            <button onclick="gantiTab('pengurus')" id="tab-pengurus" class="flex flex-col items-center justify-center p-2 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1 font-medium">
+                <span class="text-base">👥</span>
+                <span>Pengurus</span>
+            </button>
+            <button onclick="gantiTab('saran')" id="tab-saran" class="flex flex-col items-center justify-center p-2 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1 font-medium">
+                <span class="text-base">💬</span>
+                <span>Saran</span>
+            </button>
+            <button onclick="gantiTab('panduan')" id="tab-panduan" class="flex flex-col items-center justify-center p-2 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1 font-medium">
+                <span class="text-base">📖</span>
+                <span>Panduan</span>
+            </button>
+        </div>
 
         <!-- ================= SECTION 1: LAPORAN KAS ================= -->
         <section id="section-laporan" class="space-y-4">
-            
-            <!-- Area Laporan & Aksi -->
             <div id="area-laporan-kas" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border space-y-3">
-                
-                <!-- Filter Bulan & Tombol Aksi (WA & PDF) -->
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b">
                     <div>
                         <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Filter Periode</label>
@@ -81,7 +77,6 @@
 
                 <h3 class="font-bold text-sm sm:text-base text-slate-800">Riwayat Transaksi Kas</h3>
                 
-                <!-- Tabel Transaksi Unlimited dengan Scroll -->
                 <div class="max-h-[420px] overflow-y-auto overflow-x-auto pr-1">
                     <table class="w-full text-left text-xs sm:text-sm">
                         <thead class="sticky top-0 bg-white border-b z-10">
@@ -141,36 +136,36 @@
             </div>
         </section>
         
-<!-- TAB 5: PANDUAN -->
-<section id="section-panduan" class="hidden space-y-3">
-    <div class="bg-white p-4 rounded-2xl shadow-sm border space-y-3 text-xs">
-        <h2 class="font-bold uppercase tracking-wider text-slate-600">📚 Panduan Penggunaan Kas RT</h2>
-        <hr class="border-slate-100">
-        
-        <div class="space-y-2 text-slate-700">
-            <p class="font-semibold text-slate-800">1. Menu Utama</p>
-            <ul class="list-disc pl-4 space-y-1 text-slate-600">
-                <li><b>Laporan:</b> Melihat saldo kas, total masuk/keluar, dan menyaring transaksi (default 30 hari terakhir).</li>
-                <li><b>Input Kas:</b> Khusus pengurus untuk mencatat transaksi baru (memerlukan sandi).</li>
-                <li><b>Pengurus:</b> Daftar nama dan kontak WhatsApp pengurus RT.</li>
-                <li><b>Saran / Pojok Warga:</b> Tempat mengirim masukan atau pesan untuk RT.</li>
-            </ul>
+        <!-- ================= SECTION 4: PANDUAN (STATIS) ================= -->
+        <section id="section-panduan" class="hidden space-y-3">
+            <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border space-y-3 text-xs sm:text-sm">
+                <h2 class="font-bold uppercase tracking-wider text-slate-600">📚 Panduan Penggunaan Kas RT</h2>
+                <hr class="border-slate-100">
+                
+                <div class="space-y-2 text-slate-700">
+                    <p class="font-semibold text-slate-800">1. Menu Utama</p>
+                    <ul class="list-disc pl-4 space-y-1 text-slate-600">
+                        <li><b>Laporan:</b> Melihat saldo kas, total masuk/keluar, dan menyaring transaksi per periode bulan.</li>
+                        <li><b>Input Kas:</b> Khusus pengurus untuk mencatat transaksi baru (memerlukan sandi pengurus).</li>
+                        <li><b>Pengurus:</b> Daftar nama dan kontak WhatsApp pengurus RT yang aktif.</li>
+                        <li><b>Saran:</b> Tempat mengirim masukan, pertanyaan, atau pesan santai untuk warga.</li>
+                    </ul>
 
-            <p class="font-semibold text-slate-800 pt-2">2. Cara Input Transaksi</p>
-            <ol class="list-decimal pl-4 space-y-1 text-slate-600">
-                <li>Klik ikon <b>Input Kas</b>.</li>
-                <li>Masukkan sandi pengurus.</li>
-                <li>Isi tanggal, uraian, nominal masuk/keluar, lalu simpan.</li>
-            </ol>
+                    <p class="font-semibold text-slate-800 pt-2">2. Cara Input Transaksi (Pengurus)</p>
+                    <ol class="list-decimal pl-4 space-y-1 text-slate-600">
+                        <li>Klik ikon/tombol <b>Input Kas</b> di menu navigasi atas.</li>
+                        <li>Masukkan sandi pengurus dengan benar.</li>
+                        <li>Isi tanggal, uraian transaksi, nominal masuk/keluar, lalu simpan.</li>
+                    </ol>
 
-            <p class="font-semibold text-slate-800 pt-2">3. Cetak & Rekap</p>
-            <ul class="list-disc pl-4 space-y-1 text-slate-600">
-                <li>Gunakan tombol <b>Unduh PDF</b> untuk menyimpan arsip laporan.</li>
-                <li>Gunakan tombol <b>Rekap WA</b> untuk membagikan laporan ke grup warga.</li>
-            </ul>
-        </div>
-    </div>
-</section>
+                    <p class="font-semibold text-slate-800 pt-2">3. Cetak & Rekap Laporan</p>
+                    <ul class="list-disc pl-4 space-y-1 text-slate-600">
+                        <li>Gunakan tombol <b>Unduh PDF</b> untuk menyimpan arsip laporan keuangan.</li>
+                        <li>Gunakan tombol <b>Rekap WA</b> untuk membagikan ringkasan laporan langsung ke grup WhatsApp warga.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
         
     </div>
 
