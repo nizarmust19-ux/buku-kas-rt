@@ -38,7 +38,6 @@ function isiPilihanBulan(data) {
 
     data.forEach(row => {
         if (row[0]) {
-            // Ubah format string tanggal agar aman dibaca JS
             let tglStr = String(row[0]).trim();
             let tgl = new Date(tglStr);
             
@@ -106,7 +105,9 @@ function filterDataLaporan() {
             </tr>
         `;
     });
-}function bagikanKeWA() {
+}
+
+function bagikanKeWA() {
     let filterVal = document.getElementById('filter-bulan').value;
     let namaPeriode = "Semua Periode";
     
@@ -129,8 +130,6 @@ function filterDataLaporan() {
 
     let urlWA = `https://wa.me/?text=${encodeURIComponent(pesan)}`;
     window.open(urlWA, '_blank');
-}
-
 }
 
 function unduhPDF() {
@@ -263,4 +262,5 @@ async function muatDaftarSaran() {
     } catch (e) {
         listContainer.innerHTML = `<p class="text-xs sm:text-sm text-slate-400 text-center py-4">Gagal memuat pesan.</p>`;
     }
-                                                                                                                                                                                                            }
+}
+    
