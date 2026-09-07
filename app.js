@@ -106,9 +106,7 @@ function filterDataLaporan() {
             </tr>
         `;
     });
-}
-
-function bagikanKeWA() {
+}function bagikanKeWA() {
     let filterVal = document.getElementById('filter-bulan').value;
     let namaPeriode = "Semua Periode";
     
@@ -126,10 +124,13 @@ function bagikanKeWA() {
     pesan += `🟢 *Total Masuk:* ${totalM}\n`;
     pesan += `🔴 *Total Keluar:* ${totalK}\n`;
     pesan += `💰 *Saldo Akhir:* ${saldoA}\n\n`;
-    pesan += `_Transparansi Keuangan Warga RT 01/RW 03_`;
+    pesan += `🔍 Cek selengkapnya di:\nhttps://bit.ly/DataRT0103\n\n`;
+    pesan += `_Portal Warga RT 01/RW 03_`;
 
     let urlWA = `https://wa.me/?text=${encodeURIComponent(pesan)}`;
     window.open(urlWA, '_blank');
+}
+
 }
 
 function unduhPDF() {
