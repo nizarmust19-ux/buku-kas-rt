@@ -12,16 +12,28 @@ function gantiTab(tab) {
     document.getElementById('section-saran').classList.toggle('hidden', tab !== 'saran');
     
     document.getElementById('tab-laporan').className = tab === 'laporan' 
-        ? 'flex flex-col items-center justify-center py-2.5 rounded-xl bg-blue-600 text-white transition shadow-sm space-y-1' 
-        : 'flex flex-col items-center justify-center py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1';
+        ? 'flex flex-col items-center justify-center py-2.5 rounded-xl bg-blue-600 text-white transition shadow-sm space-y-1 text-xs font-semibold' 
+        : 'flex flex-col items-center justify-center py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1 text-xs font-semibold';
         
     document.getElementById('tab-pengurus').className = tab === 'pengurus' 
-        ? 'flex flex-col items-center justify-center py-2.5 rounded-xl bg-blue-600 text-white transition shadow-sm space-y-1' 
-        : 'flex flex-col items-center justify-center py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1';
+        ? 'flex flex-col items-center justify-center py-2.5 rounded-xl bg-blue-600 text-white transition shadow-sm space-y-1 text-xs font-semibold' 
+        : 'flex flex-col items-center justify-center py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1 text-xs font-semibold';
 
     document.getElementById('tab-saran').className = tab === 'saran' 
-        ? 'flex flex-col items-center justify-center py-2.5 rounded-xl bg-blue-600 text-white transition shadow-sm space-y-1' 
-        : 'flex flex-col items-center justify-center py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1';
+        ? 'flex flex-col items-center justify-center py-2.5 rounded-xl bg-blue-600 text-white transition shadow-sm space-y-1 text-xs font-semibold' 
+        : 'flex flex-col items-center justify-center py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 transition space-y-1 text-xs font-semibold';
+}
+
+function bukaModalAdmin() {
+    document.getElementById('modal-admin').classList.remove('hidden');
+    // Set default tanggal hari ini
+    let today = new Date().toISOString().split('T')[0];
+    let tglInput = document.getElementById('input-tgl');
+    if(tglInput && !tglInput.value) tglInput.value = today;
+}
+
+function tutupModalAdmin() {
+    document.getElementById('modal-admin').classList.add('hidden');
 }
 
 // --- MODUL KAS (FILTER, WA, & PDF) ---
@@ -33,7 +45,7 @@ async function muatHalamanKas() {
 
 function isiPilihanBulan(data) {
     let select = document.getElementById('filter-bulan');
-    select.innerHTML = '<option value="semua">Semua Periode</option>';
+    select.innerHTML = '<option value="semua">Semua Periode Bulan</option>';
     let setBulan = new Set();
 
     data.forEach(row => {
@@ -62,9 +74,10 @@ function isiPilihanBulan(data) {
 }
 
 function filterDataLaporan() {
+    let rentangWaktu = document.getElementById('filter-rentang').value;
     let bulanDipilih = document.getElementById('filter-bulan').value;
-    let tbody = document.getElementById('tabel-transaksi');
-    tbody.innerHTML = '';
+    let container = document.getElementById('list-transaksi');
+    container.innerHTML = '';
 
     let totalMasuk = 0, totalKeluar = 0;
     
@@ -79,37 +92,71 @@ function filterDataLaporan() {
     document.getElementById('txt-keluar').innerText = 'Rp ' + totalKeluar.toLocaleString('id-ID');
     document.getElementById('txt-saldo').innerText = 'Rp ' + (totalMasuk - totalKeluar).toLocaleString('id-ID');
 
+    let sekarang = new Date();
+
     let dataFiltered = seluruhDataKas.filter(row => {
         if (!row[0]) return false;
-        if (bulanDipilih === 'semua') return true;
-        return String(row[0]).includes(bulanDipilih);
+        let tglStr = String(row[0]).trim();
+        let tgl = new Date(tglStr);
+        if (isNaN(tgl) && tglStr.includes('/')) {
+            let parts = tglStr.split('/');
+            if(parts.length === 3) tgl = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+        }
+
+        // Filter Bulan
+        if (bulanDipilih !== 'semua') {
+            if (!tglStr.includes(bulanDipilih)) return false;
+        }
+
+        // Filter Rentang Waktu (30 Hari Terakhir)
+        if (rentangWaktu === '30') {
+            let selisihHari = (sekarang - tgl) / (1000 * 60 * 60 * 24);
+            if (selisihHari > 30 || selisihHari < 0) return false;
+        }
+
+        return true;
     });
 
     let dataUrut = dataFiltered.sort((a, b) => new Date(b[0]) - new Date(a[0]));
 
     if (dataUrut.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">Tidak ada transaksi pada periode ini.</td></tr>`;
+        container.innerHTML = `<p class="text-xs sm:text-sm text-slate-400 text-center py-6">Tidak ada riwayat transaksi pada filter ini.</p>`;
         return;
     }
 
     dataUrut.forEach(row => {
         let masuk = parseFloat(row[2]) || 0;
         let keluar = parseFloat(row[3]) || 0;
+        let isMasuk = masuk > 0;
+        let nominal = isMasuk ? masuk : keluar;
+        let warnaNominal = isMasuk ? 'text-emerald-600' : 'text-slate-800';
+        let tandaNominal = isMasuk ? '+Rp ' : '-Rp ';
+        let ikon = isMasuk ? '📥' : '📤';
+        let bgIkon = isMasuk ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600';
 
-        tbody.innerHTML += `
-            <tr class="border-b hover:bg-slate-50">
-                <td class="p-2.5 text-slate-500">${row[0]}</td>
-                <td class="p-2.5 font-medium">${row[1]}</td>
-                <td class="p-2.5 text-right text-emerald-600">${masuk > 0 ? 'Rp ' + masuk.toLocaleString('id-ID') : '-'}</td>
-                <td class="p-2.5 text-right text-rose-600">${keluar > 0 ? 'Rp ' + keluar.toLocaleString('id-ID') : '-'}</td>
-            </tr>
+        container.innerHTML += `
+            <div class="flex items-center justify-between py-3 border-b border-slate-100 text-xs sm:text-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl ${bgIkon} flex items-center justify-center font-bold text-sm">
+                        ${ikon}
+                    </div>
+                    <div>
+                        <p class="font-bold text-slate-800">${row[1]}</p>
+                        <p class="text-slate-400 text-[11px]">${row[0]}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="font-bold ${warnaNominal}">${tandaNominal}${nominal.toLocaleString('id-ID')}</p>
+                    <span class="text-[10px] text-slate-400 uppercase">${isMasuk ? 'Masuk' : 'Keluar'}</span>
+                </div>
+            </div>
         `;
     });
 }
 
 function bagikanKeWA() {
     let filterVal = document.getElementById('filter-bulan').value;
-    let namaPeriode = "Semua Periode";
+    let namaPeriode = filterVal !== 'semua' ? filterVal : "30 Hari Terakhir / Semua Periode";
     
     if(filterVal !== 'semua') {
         let [thn, bln] = filterVal.split('-');
@@ -134,7 +181,7 @@ function bagikanKeWA() {
 
 function unduhPDF() {
     let filterVal = document.getElementById('filter-bulan').value;
-    let namaPeriode = filterVal !== 'semua' ? filterVal : "Semua_Periode";
+    let namaPeriode = filterVal !== 'semua' ? filterVal : "Laporan_Kas";
     let element = document.getElementById('area-laporan-kas');
     
     let opt = {
@@ -262,5 +309,5 @@ async function muatDaftarSaran() {
     } catch (e) {
         listContainer.innerHTML = `<p class="text-xs sm:text-sm text-slate-400 text-center py-4">Gagal memuat pesan.</p>`;
     }
-}
-    
+        }
+                
