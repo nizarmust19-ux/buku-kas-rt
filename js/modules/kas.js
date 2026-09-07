@@ -162,11 +162,28 @@ export function unduhPDF() {
 export async function kirimDataKas(e) {
     e.preventDefault();
     let btn = document.getElementById('btn-simpan');
+    if (btn.disabled) return; 
+
+    let tglInput = document.getElementById('input-tgl').value;
+    let uraianInput = document.getElementById('input-uraian').value.trim().toLowerCase();
+
+    // Validasi: Cek apakah tanggal dan uraian yang sama persis sudah tercatat
+    let sudahAda = seluruhDataKas.some(row => {
+        let tglData = String(row[0]).trim();
+        let uraianData = String(row[1]).trim().toLowerCase();
+        return tglData === tglInput && uraianData === uraianInput;
+    });
+
+    if (sudahAda) {
+        alert(`Peringatan: Transaksi dengan tanggal "${tglInput}" dan uraian "${document.getElementById('input-uraian').value}" sudah pernah dicatat sebelumnya!`);
+        return;
+    }
+
     btn.innerText = 'Menyimpan...';
     btn.disabled = true;
 
     let newData = {
-        "Tanggal": document.getElementById('input-tgl').value,
+        "Tanggal": tglInput,
         "Uraian": document.getElementById('input-uraian').value,
         "Pemasukan": document.getElementById('input-masuk').value || 0,
         "Pengeluaran": document.getElementById('input-keluar').value || 0
@@ -177,13 +194,11 @@ export async function kirimDataKas(e) {
         alert('Transaksi berhasil disimpan!');
         document.getElementById('form-kas').reset();
         await initKas();
-        btn.innerText = 'Simpan Transaksi';
-        btn.disabled = false;
         tutupModalAdmin();
     } catch (err) {
-        alert('Gagal menyimpan.');
+        alert('Gagal menyimpan, silakan coba lagi.');
+    } finally {
         btn.innerText = 'Simpan Transaksi';
         btn.disabled = false;
     }
-                                                             }
-                           
+}
