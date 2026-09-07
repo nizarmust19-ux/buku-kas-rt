@@ -12,7 +12,7 @@ export async function initKas() {
 function isiPilihanBulan(data) {
     let select = document.getElementById('filter-bulan');
     if(!select) return;
-    select.innerHTML = '<option value="semua">Semua Periode</option>';
+    select.innerHTML = '';
     let setBulan = new Set();
 
     data.forEach(row => {
@@ -33,11 +33,27 @@ function isiPilihanBulan(data) {
     });
 
     let daftarSorted = Array.from(setBulan).sort().reverse();
+    
+    // Tambahkan opsi Semua Periode di bagian bawah/atas sesuai selera
+    select.innerHTML += `<option value="semua">Semua Periode</option>`;
+    
     daftarSorted.forEach(b => {
         let [thn, bln] = b.split('-');
         let namaBulan = new Date(thn, bln - 1).toLocaleString('id-ID', { month: 'long', year: 'numeric' });
         select.innerHTML += `<option value="${b}">${namaBulan}</option>`;
     });
+
+    // SET DEFAULT KE BULAN BERJALAN JIKA ADA, JIKA TIDAK KE "semua"
+    let d = new Date();
+    let bulanIni = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    
+    if (daftarSorted.includes(bulanIni)) {
+        select.value = bulanIni;
+    } else if (daftarSorted.length > 0) {
+        select.value = daftarSorted[0]; // Ambil bulan transaksi terakhir yang tersedia
+    } else {
+        select.value = 'semua';
+    }
 }
 
 export function filterDataLaporan() {
@@ -46,26 +62,38 @@ export function filterDataLaporan() {
     if(!tbody) return;
     tbody.innerHTML = '';
 
-    // Filter data terlebih dahulu berdasarkan bulan yang dipilih
+    // 1. HITUNG SALDO KESELURUHAN (Sisa Saldo Kas Riil dari awal sampai akhir)
+    let totalMasukGlobal = 0, totalKeluarGlobal = 0;
+    seluruhDataKas.forEach(row => {
+        if (row[0]) {
+            totalMasukGlobal += parseFloat(row[2]) || 0;
+            totalKeluarGlobal += parseFloat(row[3]) || 0;
+        }
+    });
+    let saldoGlobal = totalMasukGlobal - totalKeluarGlobal;
+
+    // Tampilkan Saldo Keseluruhan ke kartu utama
+    document.getElementById('txt-saldo').innerText = 'Rp ' + saldoGlobal.toLocaleString('id-ID');
+
+    // 2. FILTER DATA BERDASARKAN PILIHAN BULAN UNTUK TOTAL MASUK/KELUAR & TABEL
     let dataFiltered = seluruhDataKas.filter(row => {
         if (!row[0]) return false;
         if (bulanDipilih === 'semua') return true;
         return String(row[0]).includes(bulanDipilih);
     });
 
-    // Hitung total masuk & keluar HANYA dari data yang lolos filter
-    let totalMasuk = 0, totalKeluar = 0;
+    // Hitung total masuk & keluar HANYA untuk periode yang sedang dipilih
+    let totalMasukPeriode = 0, totalKeluarPeriode = 0;
     dataFiltered.forEach(row => {
         if (row[0]) {
-            totalMasuk += parseFloat(row[2]) || 0;
-            totalKeluar += parseFloat(row[3]) || 0;
+            totalMasukPeriode += parseFloat(row[2]) || 0;
+            totalKeluarPeriode += parseFloat(row[3]) || 0;
         }
     });
 
-    // Tampilkan angka yang sudah difilter ke kartu saldo di atas
-    document.getElementById('txt-masuk').innerText = 'Rp ' + totalMasuk.toLocaleString('id-ID');
-    document.getElementById('txt-keluar').innerText = 'Rp ' + totalKeluar.toLocaleString('id-ID');
-    document.getElementById('txt-saldo').innerText = 'Rp ' + (totalMasuk - totalKeluar).toLocaleString('id-ID');
+    // Tampilkan total masuk & keluar periode terkait ke kartu
+    document.getElementById('txt-masuk').innerText = 'Rp ' + totalMasukPeriode.toLocaleString('id-ID');
+    document.getElementById('txt-keluar').innerText = 'Rp ' + totalKeluarPeriode.toLocaleString('id-ID');
 
     let dataUrut = dataFiltered.sort((a, b) => new Date(b[0]) - new Date(a[0]));
 
@@ -104,9 +132,9 @@ export function bagikanKeWA() {
 
     let pesan = `*📢 LAPORAN KAS RT 01 / RW 03*\n`;
     pesan += `*Periode:* ${namaPeriode}\n\n`;
-    pesan += `🟢 *Total Masuk:* ${totalM}\n`;
-    pesan += `🔴 *Total Keluar:* ${totalK}\n`;
-    pesan += `💰 *Saldo Akhir:* ${saldoA}\n\n`;
+    pesan += `🟢 *Masuk Bulan Ini:* ${totalM}\n`;
+    pesan += `🔴 *Keluar Bulan Ini:* ${totalK}\n`;
+    pesan += `💰 *Sisa Kas Keseluruhan:* ${saldoA}\n\n`;
     pesan += `🔍 Cek selengkapnya di:\nhttps://bit.ly/DataRT0103\n\n`;
     pesan += `_Portal Warga RT 01/RW 03_`;
 
@@ -161,4 +189,3 @@ export async function kirimDataKas(e) {
         btn.disabled = false;
     }
         }
-        
